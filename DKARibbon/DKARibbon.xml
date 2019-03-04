@@ -10,30 +10,15 @@
           <button id="WarRoomPresent" label="War Room Present"
                screentip="War Room Present Data" onAction="OnWarRoomPresentButton"
                supertip="Presentation and Action Capture Format"/>          
+        
         </group>
-        <group id ="MasterAnalytics" label="Master Analytics">
-          <button id="MasterPOData" label="Master PO Table"
-                  screentip="Format raw AX from OPEN PURCHASE ORDER LINES report, and add to bottom or Expedite Report"
-                  onAction="OnMasterPODataButton"/>
-          <button id="MasterPODataTest" label="Master PO Table - Test"
-                  screentip="Test the MasterPO program, using sample data / test expedite report."
-                  onAction="OnMasterPODataButtonTest"/>
-          
-        </group>
-        <group id ="UpdateExpRep" label = "Update">
-          <button id="ItemUpdate" label="ItemUpdate"
-                  screentip="Highlight Item Numbers, Item Descriptions, and Item Categories to update Expedite report."
-                  onAction="btnItemUpdate"/>
-          <button id="VendorUpdate" label="Vendor Update"
-                  screentip="Highlight Vendor Numbers and Names to update Expedite report."
-                  onAction="btnVendorUpdate"/>
-        </group>
-          
-        <group id="RecDate" label ="ReceivedDate">
-          <button id="UpdateRecDate" label="Update Received Date" 
-                  screentip ="Updates any items in Expedite Report that have been received.  Inputs yesterday's date into Received Date column."
-                  onAction="OnUpdateRecDateButton"/>
-        </group>
+        <group id ="MasterAnalytics" label="Formula">
+          <button id="FirstRowFormula" label="Calculate First Row Formulas"
+                  screentip="Carry down formulas from top row to entire column, and paste-as-values after calculation"
+                  onAction="OnFirstRowFormulaButton"/>
+          <button id ="CADtoUSD" label="ConvertToUSD" onAction ="OnCurrencyConversion"/>
+        </group>                 
+        
         <group id="Test" label="TestButton">
           <button id="TestButton" label="Test"
                   onAction="TestButton"/>

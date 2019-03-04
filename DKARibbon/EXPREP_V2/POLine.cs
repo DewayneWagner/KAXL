@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections;
 using DKAExcelStuff;
 using WS = Microsoft.Office.Interop.Excel.Worksheet;
+using RG = Microsoft.Office.Interop.Excel.Range;
 
 namespace EXPREP_V2
 {
@@ -110,6 +111,7 @@ namespace EXPREP_V2
             }
             return null;
         }
+
         private bool expediteRequired;
         public bool ExpediteRequired
         {            
@@ -122,12 +124,12 @@ namespace EXPREP_V2
                     Vendor.Name == "McMaster-Carr" ||
                     Vendor.Name == "Mouser Electronics, Inc" ||
                     Vendor.Name == "Mouser Electronics" ||
-                    Vendor.Name == "Digi-Key Corporation" ||
-                    Vendor.Name == "Digi-Key Corp." ||
-                    Vendor.Name == "Newark" ||
-                    Vendor.Name == "Uline Shipping Supplies" ||
-                    Vendor.Name == "Uline Canada Corporation" ||
-                    Vendor.Name == "ULINE" ||
+                    //Vendor.Name == "Digi-Key Corporation" ||
+                    //Vendor.Name == "Digi-Key Corp." ||
+                    //Vendor.Name == "Newark" ||
+                    //Vendor.Name == "Uline Shipping Supplies" ||
+                    //Vendor.Name == "Uline Canada Corporation" ||
+                    //Vendor.Name == "ULINE" ||
                     POSource.CreatedBy == "DarrenM" ||
                     ICO)
                     {
@@ -148,8 +150,7 @@ namespace EXPREP_V2
             }
             set => expediteRequired = value;
         }
-        public bool IsLineInExpRep => (M.PODictionaryInExpRep.IsDuplicate(PONum, Math.Floor(LineNumber))) ? true : false; 
-        
+        public bool IsLineInExpRep => (M.PODictionaryInExpRep.IsDuplicate(PONum, Math.Floor(LineNumber))) ? true : false;         
     }
     public class POLinesList : IEnumerator, IEnumerable
     {
@@ -195,7 +196,7 @@ namespace EXPREP_V2
 
                 LR = KAXL.LastRow(ws, 1);
                 LC = KAXL.LastCol(ws, 1);
-
+                
                 List<string> rowDataL = new List<string>() { null };
 
                 for (int iRow = startRow; iRow <= LR; iRow++)
@@ -204,7 +205,7 @@ namespace EXPREP_V2
                     rowDataL.Add("null");
 
                     // for identifying what row the program is erroring-out on
-                    ws.Cells[1, 1].Value2 = iRow;
+                    // ws.Cells[1, 1].Value2 = iRow;
 
                     for (int iCol = 1; iCol <= LC; iCol++)
                     {

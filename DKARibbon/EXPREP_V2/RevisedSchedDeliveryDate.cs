@@ -15,7 +15,7 @@ namespace EXPREP_V2
 
         public RevisedSchedDeliveryDate(Master m) => M = m;
 
-        public RevisedSchedDeliveryDate(string revDate) => MostRecentShedDeliveryDate = Convert.ToDateTime(revDate);
+        public RevisedSchedDeliveryDate(string revDate) => MostRecentShedDeliveryDate = KAXL.ReadDateTime(revDate);
 
         public DateTime MostRecentShedDeliveryDate { get; set; }
         public int RowToUpdate { get; set; }

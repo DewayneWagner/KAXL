@@ -96,26 +96,7 @@ namespace DKAExcelStuff
                     return (LC);
             }
             return 0;
-        }
-        public static int NextRow(Worksheet ws)
-        {
-            int NR = 0;
-            NR = ws.Rows.Count + 1;
-            return NR;
-        }
-        public static string[,] DataArr(Worksheet ws, int lr, int maxCleanCol, List<string> data)
-        {
-            string[,] dataArr = new string[lr, maxCleanCol];
-
-            for (int r = 0; r < lr; r++)
-            {
-                for (int c = 0; c < maxCleanCol; c++)
-                {
-                    dataArr[r, c] = data[(r * c) + c];
-                }
-            }
-            return dataArr;
-        }
+        }                
         public static string[,] LoadDirtyArr(Worksheet ws, int lr, int lc)
         {
             string[,] loadArr = new string[lr, lc];
@@ -276,109 +257,116 @@ namespace DKAExcelStuff
         }
         public static DateTime ReadDateTime(object oDate)
         {
-            double d;
-            DateTime dt;
-
-            if(oDate == null)
-            {
-                dt = DateTime.MinValue;
-            }            
-            else if (oDate is string)
-            {
-                dt = Convert.ToDateTime(oDate);
-                //d = dt.ToOADate();                
-                dt = DateTime.FromOADate(Math.Floor(dt.ToOADate()));
-            }
-            else if (oDate is DateTime)
-            {
-                d = Math.Round(Convert.ToDouble(oDate), 0);
-                dt = DateTime.FromOADate(d);
-            }
-            else
-            {
-                dt = DateTime.MinValue;
-            }
-            dt.ToShortDateString();
-            return dt;
-
-        }
-        public static void CloseAndSaveWBIfOpen(Workbook wb)
-        {
-            bool open;
             try
             {
-                Stream s = File.Open(wb.Path, FileMode.Open, FileAccess.Read, FileShare.None);
-                s.Close();
-                open = true;
+                double d;
+                DateTime dt;
+
+                if (oDate == null)
+                {
+                    dt = DateTime.MinValue;
+                }
+                else if (oDate is string)
+                {
+                    dt = Convert.ToDateTime(oDate);
+                    dt = DateTime.FromOADate(Math.Floor(dt.ToOADate()));
+                }
+                else if (oDate is DateTime)
+                {
+                    d = Math.Round(Convert.ToDouble(oDate), 0);
+                    dt = DateTime.FromOADate(d);
+                }
+                else
+                {
+                    dt = DateTime.MinValue;
+                }
+                dt.ToShortDateString();
+                return dt;
             }
             catch
             {
-                open = false;
-            }
-            if (open)
-            {
-                wb.Save();
-                wb.Close();
+                return DateTime.MinValue;
             }
         }        
-        public static void CloseApp(xlApp xlApp)
+        public static void IfError(KAXLApp kaxlApp)
         {
-            Workbook wb = xlApp.ActiveWorkbook;
-            wb.Save();
-            wb.Close(true);
-            xlApp.Quit();
-            System.Runtime.InteropServices.Marshal.ReleaseComObject(xlApp);
-        }
-        public static void IfError(WS ws,RG rg)
-        {
-            if (rg is RG) // in case selection is an image, chart, or some other excel item
+            var mc = kaxlApp.MultiCellRangeData;
+                                    
+            string OriginalFormula;
+            string formulaWOEqualSign;
+            string modifiedFormula;
+
+            var startCell = kaxlApp.WS.Cells[mc.StartRow, mc.StartCol];
+            var endCell = kaxlApp.WS.Cells[mc.EndRow, mc.EndCol];
+            RG rg = kaxlApp.RG[startCell, endCell];
+
+            for (int row = mc.StartRow; row <= mc.EndRow; row++)
             {
-                int endRow = rg.Row + rg.Rows.Count - 1;
-                int endCol = rg.Column + rg.Columns.Count - 1;
-
-                string OriginalFormula;
-                string formulaWOEqualSign;
-                string modifiedFormula;
-
-                for (int i = rg.Row; i <= endRow; i++)
+                for (int col = mc.StartCol; col <= mc.EndCol; col++)
                 {
-                    for (int j = rg.Column; j <= endCol; j++)
-                    {
-                        RG cell = ws.Cells[i, j];
+                    modifiedFormula = null;
+                    OriginalFormula = null;
+                    formulaWOEqualSign = null;
 
-                        modifiedFormula = null;
-                        OriginalFormula = null;
-                        formulaWOEqualSign = null;
-
-                        OriginalFormula = cell.Formula;
-                        formulaWOEqualSign = OriginalFormula.Substring(1); // removes "=" sign form original formula
-                        modifiedFormula = "=iferror((" + formulaWOEqualSign + "),0)";
-                        cell.Formula = modifiedFormula;
-                    }
+                    OriginalFormula = kaxlApp.WS.Cells[row,col].Formula;
+                    formulaWOEqualSign = OriginalFormula.Substring(1); // removes "=" sign form original formula
+                    modifiedFormula = "=iferror((" + formulaWOEqualSign + "),0)";
+                    kaxlApp.WS.Cells[row, col].Formula = modifiedFormula;
                 }
-            }
-            else
+            }                       
+        }
+        public static void OverWriteFormulas(KAXLApp kaxlApp)
+        {
+            var mc = kaxlApp.MultiCellRangeData;
+            int LastRow = KAXL.LastRow(kaxlApp.WS, 1);
+            var ws = kaxlApp.WS;
+
+            for (int col = mc.StartCol; col <= mc.EndCol; col++)
             {
-                MessageBox.Show("Selection must be one cell or a range of cells.");
+                var startCell = ws.Cells[mc.StartRow, col];
+                var endCell = ws.Cells[LastRow, col];
+
+                RG rg = ws.Range[startCell, endCell];                
+                var val = rg.Value2;
+                rg.Value2 = val;            
             }
         }
-        public static void OverWriteFormulas(WS ws, RG rg)
+        public static void TopRowFormulas(KAXLApp kaxlApp)
         {
-            if (rg is RG) // in case selection is an image, chart, or some other excel item
+            var mc = kaxlApp.MultiCellRangeData;
+            int LastRow = KAXL.LastRow(kaxlApp.WS, 1);
+            var ws = kaxlApp.WS;            
+
+            for (int col = mc.StartCol; col <= mc.EndCol; col++)
             {
-                int endRow = rg.Row + rg.Rows.Count - 1;
-                int endCol = rg.Column + rg.Columns.Count - 1;
+                string extractedFormula = ws.Cells[1, col].Value2;
 
-                for (int i = rg.Row; i <= endRow; i++)
+                var startCell = ws.Cells[mc.StartRow, col];
+                var endCell = ws.Cells[LastRow, col];
+
+                RG rg = ws.Range[startCell, endCell];
+                rg.Formula = extractedFormula;
+                var val = rg.Value2;
+                rg.Value2 = val;
+            }
+        }
+        public static void CADtoUSDConverter(KAXLApp kaxlApp, double exRate)
+        {
+            var mc = kaxlApp.MultiCellRangeData;            
+            var ws = kaxlApp.WS;
+            //double exRate = 0.76037; //02-28-2019
+            
+            for (int iRow = mc.StartRow; iRow < mc.EndRow; iRow++)
+            {
+                var CAD = ws.Cells[iRow, mc.StartCol].Value2;
+                if (CAD is string)
                 {
-                    for (int j = rg.Column; j <= endCol; j++)
-                    {
-                        RG cell = ws.Cells[i, j];
-
-                        var val = cell.Value2;
-
-                        cell.Value2 = val;
-                    }
+                    if(double.TryParse(CAD, out double r))
+                        ws.Cells[iRow, mc.StartCol].Value2 = r;
+                }
+                else if(CAD is double)
+                {
+                    ws.Cells[iRow, mc.StartCol].Value2 = CAD * exRate;
                 }
             }
         }
@@ -427,6 +415,7 @@ namespace DKAExcelStuff
         public WB WB { get; set; }
         public WS WS { get; set; }
         public RG RG { get; set; }
+        public KAXLRange MultiCellRangeData { get; set; } 
         public Process Process { get; set; }
 
         public KAXLApp()
@@ -435,6 +424,7 @@ namespace DKAExcelStuff
             WB = Globals.ThisAddIn.Application.ActiveWorkbook;
             WS = WB.ActiveSheet;
             RG = Globals.ThisAddIn.Application.Selection;
+            MultiCellRangeData = new KAXLRange(RG);
         }        
         public static void CloseSheet(KAXLApp xlapp)
         {
@@ -479,6 +469,26 @@ namespace DKAExcelStuff
                 GC.Collect();
                 GC.WaitForPendingFinalizers();
             }
-        }        
-    }
+        }
+        public class KAXLRange
+        {
+            public KAXLRange(RG rg)
+            {
+                StartRow = rg.Row;
+                RowQ = rg.Rows.Count;
+                EndRow = StartRow + RowQ - 1;
+
+                StartCol = rg.Column;
+                ColQ = rg.Columns.Count;
+                EndCol = StartCol + ColQ - 1;
+            }
+            public int StartRow { get; set; }
+            public int EndRow { get; set; }
+            public int RowQ { get; set; }
+
+            public int StartCol { get; set; }
+            public int EndCol { get; set; }
+            public int ColQ { get; set; }
+        }
+    }    
 }

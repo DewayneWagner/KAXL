@@ -109,6 +109,12 @@
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
+    <Reference Include="TeixeiraSoftware.Finance.Currency, Version=4.0.3.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\TeixeiraSoftware.Finance.Currency.4.0.3\lib\netstandard2.0\TeixeiraSoftware.Finance.Currency.dll</HintPath>
+    </Reference>
+    <Reference Include="TeixeiraSoftware.Finance.ICurrency, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\TeixeiraSoftware.Finance.ICurrency.1.0.0\lib\netstandard2.0\TeixeiraSoftware.Finance.ICurrency.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Reference Include="Microsoft.Office.Tools.v4.0.Framework, Version=10.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
@@ -174,6 +180,12 @@
     <Compile Include="EXPREP_V2\RevisedSchedDeliveryDate.cs" />
     <Compile Include="EXPREP_V2\Status.cs" />
     <Compile Include="EXPREP_V2\Vendor.cs" />
+    <Compile Include="frmCurrencyConvert.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="frmCurrencyConvert.Designer.cs">
+      <DependentUpon>frmCurrencyConvert.cs</DependentUpon>
+    </Compile>
     <Compile Include="KAXL.cs" />
     <Compile Include="EXPREP_V2\AddToExpRep.cs" />
     <Compile Include="MasterAnalytics\AttentionInfo.cs" />
@@ -194,6 +206,9 @@
     <EmbeddedResource Include="EXPREP_V2\EXPREP_V2_WINDOW.resx">
       <DependentUpon>EXPREP_V2_WINDOW.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="frmCurrencyConvert.resx">
+      <DependentUpon>frmCurrencyConvert.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
@@ -204,6 +219,7 @@
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
     <None Include="DKARibbon_TemporaryKey.pfx" />
+    <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>

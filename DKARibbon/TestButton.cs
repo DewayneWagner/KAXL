@@ -13,127 +13,90 @@ using WS = Microsoft.Office.Interop.Excel.Worksheet;
 using RG = Microsoft.Office.Interop.Excel.Range;
 
 using DKARibbon;
+using System.Net;
+using System.Text.RegularExpressions;
+using System.Globalization;
 
 namespace DKAExcelStuff
 {
-    public static class TestButton
+    public class TestButton
     {
         public static void TestM(KAXLApp kaxlApp)
         {
-            DateTimeTest(kaxlApp);
-        }
-        public static void DateTimeTest(KAXLApp kaxl)
-        {
-            int sRow = 1, lRow = 5, iCol = 1;
-            DateTime revDate;
+            CurrencyConversion(1, "CAD", "USD");
+            
+            
+            // Key to api.forex/users/dashboard: ab12608f-3a25-457e-9689-a72db5290948
 
-            for (int i = sRow; i <= lRow; i++)
+
+
+
+
+
+
+
+
+            //CurrencyConversion(1, "CAD", "USD");
+
+            //WebClient web = new WebClient();
+            //string url = string.Format("https://www.google.com/finance/converter?from=CAD&to=USD&a=1");
+            //string response = web.DownloadString(url);
+
+            //string url = string.Format("http://finance.yahoo.com/d/quotes.csv?s=CADUSD=X&f=11");
+            //string response = new WebClient().DownloadString(url);
+
+            // this attempt returns hundreds of lines of stuff, and does not find exrate
+            //string url = string.Format("http://www.google.co.in/ig/calculator?h1=en&q=CADUSD%3D%3F1");
+            //string blah = new WebClient().DownloadString(url);
+            //decimal x = decimal.Parse(blah, System.Globalization.CultureInfo.InvariantCulture); // this line errors out, "not correct format"
+
+            //string url = string.Format("https://www.google.com/finance/converter?a={0}&from={1}&to={1}", 
+            //    Convert.ToString(1), "CAD", "USD");
+            //WebRequest request = WebRequest.Create(url);            
+            //request.UseDefaultCredentials = true;
+            //StreamReader sr = new StreamReader(request.GetResponse().GetResponseStream(), System.Text.Encoding.ASCII); Error 403 - forbidden
+            //string result = Regex.Matches(sr.ReadToEnd(), @"<span class="\" bld="">([^<]+)</span>")[0].Groups[1].Value;
+
+            //string result = sr.ReadToEnd();
+
+            // the below doesn't work....doesn't scrub exrate from massive string returned
+            //NumberFormatInfo nfi = NumberFormatInfo.CurrentInfo;
+            //string pattern;
+            //pattern = @"^\s*[";
+            //// Get the positive and negative sign symbols.
+            //pattern += Regex.Escape(nfi.PositiveSign + nfi.NegativeSign) + @"]?\s?";
+            //// Get the currency symbol.
+            //pattern += Regex.Escape(nfi.CurrencySymbol) + @"?\s?";
+            //// Add integral digits to the pattern.
+            //pattern += @"(\d*";
+            //// Add the decimal separator.
+            //pattern += Regex.Escape(nfi.CurrencyDecimalSeparator) + "?";
+            //// Add the fractional digits.
+            //pattern += @"\d{";
+            //// Determine the number of fractional digits in currency values.
+            //pattern += nfi.CurrencyDecimalDigits.ToString() + "}?){1}$";
+
+            //Regex rgx = new Regex(pattern);
+
+            //double exRate;
+
+            //exRate = rgx.IsMatch(result) ? Convert.ToDouble(result) : Convert.ToDouble(1);
+        }
+
+        public static string CurrencyConversion(decimal amount, string fromCurrency, string toCurrency)
+        {    
+            //string urlPattern = "http://finance.yahoo.com/d/quotes.csv?s={0}{1}=X&f=l1"; // System.Net.WebException: 'The remote name could not be resolved: 'download.finance.yahoo.com''
+            string urlPattern = "http://www.google.co.in/ig/calculator?h1=en&q={0}{1}%3D%3F1"; 
+
+            string url = string.Format(urlPattern, fromCurrency, toCurrency);
+            
+            using (var wc = new WebClient())
             {
-                var rd = kaxl.WS.Cells[i,iCol].Value;
-                revDate = (rd is DateTime) ? rd : Convert.ToDateTime(rd);
+                var response = wc.DownloadString(url);
+                decimal exchangeRate = decimal.Parse(response, CultureInfo.InvariantCulture); // with google - data not in correct format
+
+                return (amount * exchangeRate).ToString("N3");
             }
-            KAXLApp.CloseSheet(kaxl);
         }
-
-
-        //public static void AttentionInfo(Worksheet ws)
-        //{
-        //    int firstRow = 2;
-        //    int lastRow = 97;
-        //    int cScrubbedAttInfo = 2;
-        //    int cPOSourceCode = 3;
-        //    int cRequester = 4;
-        //    int cCreatedBy = 5;
-        //    int cSourceType = 6;
-
-        //    for (int i = firstRow; i <= lastRow; i++)
-        //    {
-        //        string attInfo = ws.Cells[i, 1].Value2;
-        //        AttentionInfo attentionInfo = new AttentionInfo(attInfo);
-
-        //        if (attentionInfo.IsMultiLinePO)
-        //        {
-        //            for (int ii = 0; ii < attentionInfo.GetQPO; ii++)
-        //            {
-        //                AttentionInfo ai = attentionInfo[ii];
-
-        //                if(ii == 0)
-        //                    ws.Cells[i, (cScrubbedAttInfo + ii)].Value2 = ai.AttInfo;
-
-        //                ws.Cells[i, (cPOSourceCode + (4 * ii))].Value2 = ai.POSourceCode;
-        //                ws.Cells[i, (cRequester + (4 * ii))].Value2 = ai.Requester;
-        //                ws.Cells[i, (cCreatedBy+ (4 * ii))].Value2 = ai.CreatedBy;
-        //                ws.Cells[i, (cSourceType+ (4 * ii))].Value2 = ai.POSourceType;
-        //            }
-        //        }
-        //        else
-        //        {
-        //            ws.Cells[i, cScrubbedAttInfo].Value2 = attentionInfo.AttInfo;
-        //            ws.Cells[i, cPOSourceCode].Value2 = attentionInfo.POSourceCode;
-        //            ws.Cells[i, cRequester].Value2 = attentionInfo.Requester;
-        //            ws.Cells[i, cCreatedBy].Value2 = attentionInfo.CreatedBy;
-        //            ws.Cells[i, cSourceType].Value2 = attentionInfo.POSourceType;
-        //        }
-        //    }
-        //}
-        //public static void ReadItemsXL(Worksheet ws)
-        //{
-        //    int iRow = 2;
-        //    int LR = KAXL.LastRow(ws, Col.ItemNum);
-        //    string itemDesc = null;
-        //    string itemCat = null;
-        //    string itemNum = null;
-        //    int jRow = LR + 1;
-
-        //    string path = @"TestBinaryWrite.bin";
-
-        //    Dictionary<string,ItemDesc> ItemDictTest = new Dictionary<string, ItemDesc>();
-        //    Dictionary<string, ItemDesc> ItemDictBin = new Dictionary<string, ItemDesc>();
-
-        //    for (int i = 2; i <= LR; i++)
-        //    {
-        //        itemNum = Convert.ToString(ws.Cells[i, Col.ItemNum].Value2);
-        //        itemDesc = Convert.ToString(ws.Cells[i, Col.ItemDesc].Value2);
-        //        itemCat = Convert.ToString(ws.Cells[i, Col.ItemCat].Value2);
-
-        //        ItemDesc item = new ItemDesc(itemNum, itemDesc, itemCat);
-
-        //        ItemDictTest.Add(itemNum, item);
-        //    }
-
-        //    foreach (KeyValuePair<string,ItemDesc> item in ItemDictTest)
-        //    {
-        //        ws.Cells[iRow, Col.testItemN].Value2 = item.Value.ItemN;
-        //        ws.Cells[iRow, Col.testItemD].Value2 = item.Value.ItemD;
-        //        ws.Cells[iRow, Col.testItemC].Value2 = item.Value.ItemCategory;
-        //        iRow++;
-        //    }
-
-        //    BinaryWriter bw = new BinaryWriter(
-        //        new FileStream(path, FileMode.OpenOrCreate, FileAccess.Write));
-
-        //    foreach (KeyValuePair<string,ItemDesc> item in ItemDictTest)
-        //    {
-        //        bw.Write(item.Value.ItemN);
-        //        bw.Write(item.Value.ItemD);
-        //        bw.Write(item.Value.ItemCategory);
-        //    }
-
-        //    bw.Close();
-
-        //    BinaryReader br = new BinaryReader(
-        //        new FileStream(path, FileMode.OpenOrCreate, FileAccess.Read));
-
-        //    while (br.PeekChar() != (-1))
-        //    {
-        //        itemNum = br.ReadString();
-        //        itemDesc = br.ReadString();
-        //        itemCat = br.ReadString();
-
-        //        ItemDesc item = new ItemDesc(itemNum, itemDesc, itemCat);
-        //        ItemDictBin.Add(itemNum, item);
-        //    }
-        //    br.Close();
-        //}
     }  
 }

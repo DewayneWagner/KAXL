@@ -36,17 +36,41 @@ namespace DKARibbon
     [ComVisible(true)]
     public class DKARibbon : Office.IRibbonExtensibility
     {
+        private Form currencyConversionForm;
         private Office.IRibbonUI ribbon;
 
         public DKARibbon()
         {
+
         }
         public void TestButton(Office.IRibbonControl control)
         {
             KAXLApp k = new KAXLApp();
+            DKAExcelStuff.TestButton.TestM(k);
+            //System.Runtime.InteropServices.Marshal.ReleaseComObject(k);
 
-            DKAExcelStuff.TestButton.TestM(k);            
         }
+
+        public void OnCurrencyConversion(Office.IRibbonControl control)
+        {
+            KAXLApp k = new KAXLApp();
+            currencyConversionForm = new frmCurrencyConvert(k);
+            System.Windows.Forms.Application.EnableVisualStyles();
+            System.Windows.Forms.Application.Run(currencyConversionForm);
+
+            //if(currencyConversionForm == null)
+            //{
+            //    KAXLApp k = new KAXLApp();
+            //    currencyConversionForm = new frmCurrencyConvert(k);
+            //    System.Windows.Forms.Application.EnableVisualStyles();
+            //    System.Windows.Forms.Application.Run(currencyConversionForm);
+            //}
+            //else
+            //{
+            //    currencyConversionForm.Show();
+            //}
+        }
+
         public void OnWarRoomButton(Office.IRibbonControl control)
         {
             DKAExcelStuff.WarRoomFormat.ReqData();
@@ -57,84 +81,24 @@ namespace DKARibbon
             DKAExcelStuff.WarRoomPresent.PresentData();
         }
         
-        public void OnMasterPODataButton(Office.IRibbonControl control)
+        public void OnFirstRowFormulaButton(Office.IRibbonControl control)
         {
-            var xlApp = new XL.Application();
-            Workbook wb = Globals.ThisAddIn.Application.ActiveWorkbook;
-            Worksheet ws = wb.ActiveSheet;
-
-            //DKAExcelStuff.MasterAnalytics.ExpPath = @"R:\Supply Chain\ExpediteReport\ExpediteReport.xlsx";
-            //DKAExcelStuff.MasterAnalytics.MasterDataPath = @"R:\Supply Chain\ExpediteReport\MasterData.xlsx";
-
-            //DKAExcelStuff.MasterAnalytics.MasterAnalyticsStart(ws);
-            System.Runtime.InteropServices.Marshal.ReleaseComObject(xlApp);
+            KAXLApp k = new KAXLApp();
+            KAXL.TopRowFormulas(k);
+            System.Runtime.InteropServices.Marshal.ReleaseComObject(k.XL);
         }
 
-        public void OnMasterPODataButtonTest(Office.IRibbonControl control)
-        {
-            var xlApp = new XL.Application();
-            Workbook wb = Globals.ThisAddIn.Application.ActiveWorkbook;
-            Worksheet ws = wb.ActiveSheet;
-
-            //DKAExcelStuff.MasterAnalytics.ExpPath = @"C:\Users\dewaynew\Desktop\Homework\EXPREP\ExpediteReport.xlsx";
-            //DKAExcelStuff.MasterAnalytics.MasterDataPath = @"C:\Users\dewaynew\Desktop\Homework\EXPREP\MasterData.xlsx";
-
-            //DKAExcelStuff.MasterAnalytics.MasterAnalyticsStart(ws);
-
-            System.Runtime.InteropServices.Marshal.ReleaseComObject(xlApp);
-        }
-        public void btnItemUpdate(Office.IRibbonControl control)
-        {
-            var xlApp = new XL.Application();
-            Workbook wb = Globals.ThisAddIn.Application.ActiveWorkbook;
-            Worksheet ws = wb.ActiveSheet;
-            Range rg = Globals.ThisAddIn.Application.Selection;
-
-            //ItemUpdate.ItemUpdateM(ws, rg);
-
-            System.Runtime.InteropServices.Marshal.ReleaseComObject(xlApp);
-        }
-        public void btnVendorUpdate(Office.IRibbonControl control)
-        {
-            var xlApp = new XL.Application();
-            Workbook wb = Globals.ThisAddIn.Application.ActiveWorkbook;
-            Worksheet ws = wb.ActiveSheet;
-            Range rg = Globals.ThisAddIn.Application.Selection;
-
-            //VendorUpdate.VendorM(ws, rg);
-
-            System.Runtime.InteropServices.Marshal.ReleaseComObject(xlApp);
-        }
-        public void OnUpdateRecDateButton(Office.IRibbonControl control)
-        {
-            var xlApp = new XL.Application();
-            Workbook wb = Globals.ThisAddIn.Application.ActiveWorkbook;
-            Worksheet ws = wb.ActiveSheet;
-
-            //UpdateRecDate.AddReceivedDate(ws);
-
-            System.Runtime.InteropServices.Marshal.ReleaseComObject(xlApp);
-        }
         public void btnIfError(Office.IRibbonControl control)
         {
-            var xlApp = new XL.Application();
-            Workbook wb = Globals.ThisAddIn.Application.ActiveWorkbook;
-            Worksheet ws = wb.ActiveSheet;
-            Range rg = Globals.ThisAddIn.Application.Selection;
-            
-            KAXL.IfError(ws,rg);
-
-            System.Runtime.InteropServices.Marshal.ReleaseComObject(xlApp);
+            KAXLApp k = new KAXLApp();
+            KAXL.IfError(k);
+            System.Runtime.InteropServices.Marshal.ReleaseComObject(k.XL);
         }
         public void btnOverWrite(Office.IRibbonControl control)
         {
-            var xlApp = new XL.Application();
-            Workbook wb = Globals.ThisAddIn.Application.ActiveWorkbook;
-            Worksheet ws = wb.ActiveSheet;
-            Range rg = Globals.ThisAddIn.Application.Selection;
-            KAXL.OverWriteFormulas(ws, rg);
-
-            System.Runtime.InteropServices.Marshal.ReleaseComObject(xlApp);
+            KAXLApp kaxlApp = new KAXLApp();
+            KAXL.OverWriteFormulas(kaxlApp);
+            System.Runtime.InteropServices.Marshal.ReleaseComObject(kaxlApp.XL);
         }
         public void btnEXPREP_V2(Office.IRibbonControl control)
         {
@@ -142,7 +106,6 @@ namespace DKARibbon
             
             System.Windows.Forms.Application.EnableVisualStyles();
             System.Windows.Forms.Application.Run(new frmEXPREP_V2_WINDOW(kaxlApp));
-
         }
 
         #region IRibbonExtensibility Members
