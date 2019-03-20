@@ -370,6 +370,24 @@ namespace DKAExcelStuff
                 }
             }
         }
+        public static void ScrubItemNumbers(KAXLApp kaxlApp)
+        {
+            var mc = kaxlApp.MultiCellRangeData;
+            var ws = kaxlApp.WS;
+
+            for (int iRow = mc.StartRow; iRow < mc.EndRow; iRow++)
+            {
+                var val = ws.Cells[iRow, mc.StartCol].Value2;
+                if(double.TryParse(val,out double result))
+                {
+                    ws.Cells[iRow, mc.StartCol].Value2 = result;
+                }
+                else
+                {
+                    ws.Cells[iRow, mc.StartCol].Value2 = val;
+                }
+            }
+        }
         public static void ExportAsPDF(xlApp xlapp)
         {
             
@@ -388,10 +406,18 @@ namespace DKAExcelStuff
         {
             columnHeadingsL = new List<string>() { null };
             int LC = KAXL.LastCol(ws,1);
-            
+            int tableStartRow = 0;
+            bool isStartRow = false;
+
+            do
+            {
+                tableStartRow++;
+                isStartRow = ws.Cells[tableStartRow, 1].Value2 == null ? false : true;                
+            } while (!isStartRow);
+
             for (int i = 1; i <= LC; i++)
             {
-                columnHeadingsL.Add(ws.Cells[1, i].Value2);
+                columnHeadingsL.Add(ws.Cells[tableStartRow, i].Value2);
             }
         }
         public int GetColNum(string heading)

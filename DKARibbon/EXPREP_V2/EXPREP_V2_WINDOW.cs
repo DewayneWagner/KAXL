@@ -14,6 +14,7 @@ namespace EXPREP_V2
     public partial class frmEXPREP_V2_WINDOW : Form
     {
         KAXLApp k;
+        Master M;
         public frmEXPREP_V2_WINDOW(KAXLApp kaxlApp)
         {
             InitializeComponent();
@@ -27,10 +28,11 @@ namespace EXPREP_V2
 
         private void btnUpdateExpRep_Click(object sender, EventArgs e)
         {
+            M = new Master(k, this);
             try
             {
                 txtDone.Text = "Working...";
-                Master M = new Master(k);
+                
 
                 txtDone.Text = "DONE!!!";
                 txtQDeliveryDatesUpdated.Text = Convert.ToString(M.updateMetrics.QUpdatedRevisedDeliveryDates);
@@ -40,14 +42,20 @@ namespace EXPREP_V2
             }
             catch
             {
-                txtDone.Text = "F'd Up...";
+                txtDone.Text = "F'd Up..." + "\n" + M.errorTracker.GetErrorMessage();
             }
         }
 
+        public void KillProgramLeaveWindowOpen(string message)
+        {
+            txtDone.Text = message;
+            
+        }
+        
         private void btnExit_Click(object sender, EventArgs e)
         {
-            KAXLApp.CloseSheet(k);
-            this.Close();
+            //KAXLApp.CloseSheet(k);
+            Close();
         }
     }
 }

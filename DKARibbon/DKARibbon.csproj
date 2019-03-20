@@ -178,6 +178,7 @@
     <Compile Include="EXPREP_V2\POLine.cs" />
     <Compile Include="EXPREP_V2\ReceivedDate.cs" />
     <Compile Include="EXPREP_V2\RevisedSchedDeliveryDate.cs" />
+    <Compile Include="EXPREP_V2\Source.cs" />
     <Compile Include="EXPREP_V2\Status.cs" />
     <Compile Include="EXPREP_V2\Vendor.cs" />
     <Compile Include="frmCurrencyConvert.cs">

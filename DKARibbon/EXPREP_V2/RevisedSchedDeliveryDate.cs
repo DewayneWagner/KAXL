@@ -66,8 +66,12 @@ namespace EXPREP_V2
             {                
                 date = M.RevisedSchedDelDatesToUpdate[i];
                 var c = ws.Cells[date.RowToUpdate, col];
-                c.Value2 = date.MostRecentShedDeliveryDate;
-                c.Interior.Color = System.Drawing.ColorTranslator.ToOle(System.Drawing.Color.Yellow);
+
+                if(date.MostRecentShedDeliveryDate != DateTime.MinValue)
+                {
+                    c.Value2 = date.MostRecentShedDeliveryDate;
+                }                
+                //c.Interior.Color = System.Drawing.ColorTranslator.ToOle(System.Drawing.Color.Yellow);
             }
         }        
     }

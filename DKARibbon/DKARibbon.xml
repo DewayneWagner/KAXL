@@ -16,7 +16,8 @@
           <button id="FirstRowFormula" label="Calculate First Row Formulas"
                   screentip="Carry down formulas from top row to entire column, and paste-as-values after calculation"
                   onAction="OnFirstRowFormulaButton"/>
-          <button id ="CADtoUSD" label="ConvertToUSD" onAction ="OnCurrencyConversion"/>
+          <button id ="CADtoUSD" label="Convert CAD To USD" onAction ="OnCurrencyConversion"/>
+          <button id="ScrubItemNumbers" label="Scrub Item Numbers" onAction="OnScrubItemNumbers"/>
         </group>                 
         
         <group id="Test" label="TestButton">

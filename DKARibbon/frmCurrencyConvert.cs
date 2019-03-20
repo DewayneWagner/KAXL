@@ -22,9 +22,7 @@ namespace DKARibbon
             ControlBox = false;
 
             K = k;
-            IsHidden = false;
         }
-        public bool IsHidden { get; set; }
 
         private void btn_ConvertData_Click(object sender, EventArgs e)
         {
@@ -33,14 +31,7 @@ namespace DKARibbon
 
         private void btn_Exit_Click(object sender, EventArgs e)
         {
-            //this.Close(); closes xl sheet
-            //Application.Exit(); closes xl sheet
-            //this.Dispose();
-            //this.IsHidden = true;
-            //this.Hide();
-
-            frmCurrencyConvert.ActiveForm.Close();
-
+            Close();
         }
     }
 }

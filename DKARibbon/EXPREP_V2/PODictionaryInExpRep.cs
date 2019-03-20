@@ -49,10 +49,13 @@ namespace EXPREP_V2
             bool isRecDatePresent;
             string itemNum, itemDesc;
 
-            for (int iRow = 2; iRow < LR; iRow++)
+            for (int iRow = 3; iRow < LR; iRow++)
             {
                 // for testing, to determine row which is erroring out
                 //ws.Cells[1,1].Value2 = iRow;
+
+                M.errorTracker.Process = "Reading Expedite Report";
+                M.errorTracker.LineNumber = Convert.ToString(iRow);
 
                 status = ws.Cells[iRow, M.ExpRepColumn.Status].Value2;
                 poNum = ws.Cells[iRow, M.ExpRepColumn.PONumber].Value2;

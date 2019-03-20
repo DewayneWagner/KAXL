@@ -16,12 +16,16 @@ namespace EXPREP_V2
 
         public Master() { }
 
-        public Master(KAXLApp kaxlapp)
+        private frmEXPREP_V2_WINDOW form;
+
+        public Master(KAXLApp kaxlapp, frmEXPREP_V2_WINDOW f)
         {
+            form = f;
             stopWatch = new StopWatch();
             stopWatch.StartTime = DateTime.Now;
 
             updateMetrics = new UpdateMetrics();
+            errorTracker = new ErrorTracker();
 
             kaxlApp = kaxlapp;
 
@@ -72,6 +76,7 @@ namespace EXPREP_V2
         public RevisedSchedDelDatesToUpdate RevisedSchedDelDatesToUpdate { get; set; }
         public StopWatch stopWatch { get; set; }
         public UpdateMetrics updateMetrics { get; set; }
+        public ErrorTracker errorTracker { get; set; }
 
         // to give access to revised & received dates to update
         public Dates Dates { get; set; }
@@ -91,6 +96,14 @@ namespace EXPREP_V2
             public int QTotalUpdatedLines { get; set; }
             public int QUpdatedReceivedDates { get; set; }
             public int QUpdatedRevisedDeliveryDates { get; set; }
+        }
+        public class ErrorTracker
+        {
+            public string Process { get; set; }
+            public string LineNumber { get; set; }
+
+            public string GetErrorMessage() => "Error Occurred during " + Process + " process, " + "\n" +
+                "on line number " + LineNumber;
         }
     }    
 }

@@ -38,13 +38,13 @@ namespace EXPREP_V2
                 if(po.Status.CleanStatus != "Canceled")
                 {
                     // POSource Class
-                    ws.Cells[nextRow, dCol.AttentionInfo].Value2 = po.POSource.AttInfo;
-                    ws.Cells[nextRow, dCol.POSourceType].Value2 = Convert.ToString(po.POSource.POSourceType);
-                    ws.Cells[nextRow, dCol.POSourceCode].Value2 = po.POSource.POSourceCode;
-                    ws.Cells[nextRow, dCol.Requester].Value2 = po.POSource.Requester;
-                    ws.Cells[nextRow, dCol.Createdby].Value2 = po.POSource.CreatedBy;
-                    ws.Cells[nextRow, dCol.Expeditor].Value2 = po.POSource.CreatedBy;
-                    
+                    ws.Cells[nextRow, dCol.AttentionInfo].Value2 = po.Source.OriginalAttentionInfo;
+                    ws.Cells[nextRow, dCol.POSourceType].Value2 = Convert.ToString(po.Source.Type);
+                    ws.Cells[nextRow, dCol.POSourceCode].Value2 = po.Source.Code;
+                    ws.Cells[nextRow, dCol.Requester].Value2 = po.Source.Requester;
+                    ws.Cells[nextRow, dCol.Createdby].Value2 = po.Source.CreatedBy;
+                    ws.Cells[nextRow, dCol.Expeditor].Value2 = po.Source.CreatedBy;
+
                     // Cash Class
                     ws.Cells[nextRow, dCol.CAD].Value2 = po.Cash.CAD;
                     ws.Cells[nextRow, dCol.Curr].Value2 = po.Cash.Currency;
@@ -81,7 +81,7 @@ namespace EXPREP_V2
                     ws.Cells[nextRow, dCol.DateAdded].Value2 = DateTime.Today;
 
                     // attempt to leave blank dates
-                    var revisedSchedDelDate = po.Dates.RevisedSchedDelDate.MostRecentShedDeliveryDate;
+                    DateTime revisedSchedDelDate = po.Dates.RevisedSchedDelDate.MostRecentShedDeliveryDate;
                     if(revisedSchedDelDate != DateTime.MinValue)
                     {
                         ws.Cells[nextRow, dCol.RevisedSchedDelDate].Value2 = revisedSchedDelDate;

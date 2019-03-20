@@ -47,28 +47,17 @@ namespace DKARibbon
         {
             KAXLApp k = new KAXLApp();
             DKAExcelStuff.TestButton.TestM(k);
-            //System.Runtime.InteropServices.Marshal.ReleaseComObject(k);
-
         }
 
         public void OnCurrencyConversion(Office.IRibbonControl control)
         {
             KAXLApp k = new KAXLApp();
             currencyConversionForm = new frmCurrencyConvert(k);
-            System.Windows.Forms.Application.EnableVisualStyles();
-            System.Windows.Forms.Application.Run(currencyConversionForm);
-
-            //if(currencyConversionForm == null)
-            //{
-            //    KAXLApp k = new KAXLApp();
-            //    currencyConversionForm = new frmCurrencyConvert(k);
-            //    System.Windows.Forms.Application.EnableVisualStyles();
-            //    System.Windows.Forms.Application.Run(currencyConversionForm);
-            //}
-            //else
-            //{
-            //    currencyConversionForm.Show();
-            //}
+            currencyConversionForm.ShowDialog();
+        }
+        public void OnScrubItemNumbers(Office.IRibbonControl control)
+        {            
+            KAXL.ScrubItemNumbers(new KAXLApp());
         }
 
         public void OnWarRoomButton(Office.IRibbonControl control)
@@ -102,10 +91,12 @@ namespace DKARibbon
         }
         public void btnEXPREP_V2(Office.IRibbonControl control)
         {
-            KAXLApp kaxlApp = new KAXLApp();
-            
-            System.Windows.Forms.Application.EnableVisualStyles();
-            System.Windows.Forms.Application.Run(new frmEXPREP_V2_WINDOW(kaxlApp));
+            frmEXPREP_V2_WINDOW expRepForm = new frmEXPREP_V2_WINDOW(new KAXLApp());
+            expRepForm.ShowDialog();
+
+            //KAXLApp kaxlApp = new KAXLApp();
+            //System.Windows.Forms.Application.EnableVisualStyles();
+            //System.Windows.Forms.Application.Run(new frmEXPREP_V2_WINDOW(kaxlApp));
         }
 
         #region IRibbonExtensibility Members

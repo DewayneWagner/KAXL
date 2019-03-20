@@ -34,6 +34,7 @@ namespace EXPREP_V2
             }            
             else if(M.AllPOsDict.IsInAllPOReport(PONum))
             {
+                Source = new Source(poLine[c.AttentionInformation]);
                 Cash = new Cash(poLine[c.Currency], poLine[c.UnitPrice], poLine[c.NetAmount], poLine[c.CreatedDate], M);
                 Vendor = M.VendorDict[poLine[c.VendorAccount]];                
                 Item = M.ItemDict[poLine[c.ItemNumber]];
@@ -42,8 +43,9 @@ namespace EXPREP_V2
 
                 WH = FormatWH(poLine[c.Warehouse]);
                 Receiver = FormatReceiver();
-               
-                POSource = new POSource(poLine[c.AttentionInformation]);                
+
+                //POSource = new POSource(poLine[c.AttentionInformation]);
+                
             }            
         }
         private void CheckAndUpdateReceivedAndRevisedDate() 
@@ -71,7 +73,8 @@ namespace EXPREP_V2
         public Vendor Vendor { get; set; }
         public Category Category { get; set; }
         public Item Item { get; set; }
-        public POSource POSource { get; set; }
+        //public POSource POSource { get; set; }
+        public Source Source { get; set; }
         public Dates Dates { get; set; }
 
         // need method to set
@@ -130,7 +133,7 @@ namespace EXPREP_V2
                     //Vendor.Name == "Uline Shipping Supplies" ||
                     //Vendor.Name == "Uline Canada Corporation" ||
                     //Vendor.Name == "ULINE" ||
-                    POSource.CreatedBy == "DarrenM" ||
+                    Source.CreatedBy == "DarrenM" ||
                     ICO)
                     {
                         expediteRequired = false;
@@ -198,14 +201,18 @@ namespace EXPREP_V2
                 LC = KAXL.LastCol(ws, 1);
                 
                 List<string> rowDataL = new List<string>() { null };
-
-                for (int iRow = startRow; iRow <= LR; iRow++)
+                int iRow;
+                
+                for (iRow = startRow; iRow <= LR; iRow++)
                 {
+                    M.errorTracker.Process = "Reading " + (Master.SheetNamesE)i;
+                    M.errorTracker.LineNumber = Convert.ToString(iRow);
+
                     rowDataL.Clear();
                     rowDataL.Add("null");
 
                     // for identifying what row the program is erroring-out on
-                    // ws.Cells[1, 1].Value2 = iRow;
+                    //ws.Cells[1, 1].Value2 = iRow;
 
                     for (int iCol = 1; iCol <= LC; iCol++)
                     {
@@ -218,15 +225,15 @@ namespace EXPREP_V2
                     }
                     POLine po = new POLine(rowDataL, M);
 
-                    if (!po.IsLineInExpRep)
+                    if (!po.IsLineInExpRep && M.AllPOsDict.IsInAllPOReport(po.PONum))
                     {
-                        if (po.POSource.IsMultiLinePO)
+                        if (po.Source.IsMultiLinePO)
                         {
-                            int q = po.POSource.GetQPO;
-                            POSource[] tempArray = new POSource[q];
+                            int q = po.Source.QSourcesInList;
+                            Source[] tempArray = new Source[q];
                             for (int iii = 0; iii < q; iii++)
                             {
-                                tempArray[iii] = po.POSource.MultiLinePOArray[iii];
+                                tempArray[iii] = po.Source[iii];
                             }
                             double poLineNum = po.LineNumber;
                             for (int ii = 0; ii < q; ii++)
@@ -234,12 +241,12 @@ namespace EXPREP_V2
                                 if (ii == 0)
                                 {
                                     po.LineNumber += 0.1;
-                                    po.POSource = tempArray[ii];
+                                    po.Source = tempArray[ii];
                                     poLinesL.Add(po);
                                 }
                                 else
                                 {
-                                    POSource pos = tempArray[ii];
+                                    Source pos = tempArray[ii];
                                     AddMultiLinePOToPOList(po, pos, q);
                                 }
                             }
@@ -247,14 +254,13 @@ namespace EXPREP_V2
                         else
                         {
                             poLinesL.Add(po);
-                        }                            
-                    }
+                        }
+                    }                   
                 }
-                // this is where the code will go to delete data in Worksheet
                 ws.Cells.ClearContents();
             }
         }
-        private void AddMultiLinePOToPOList(POLine po, POSource pos, int q)
+        private void AddMultiLinePOToPOList(POLine po, Source pos, int q)
         {            
             double lineNumber = po.LineNumber;
             double quantity = po.Quantity;
@@ -284,7 +290,7 @@ namespace EXPREP_V2
 
                 // for multiline PO's
                 newPO.Quantity = 0;
-                newPO.POSource = pos;
+                newPO.Source = pos;
                 newPO.LineNumber = lineNum;
 
                 poLinesL.Add(newPO);
