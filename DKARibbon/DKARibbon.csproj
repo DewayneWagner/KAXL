@@ -163,7 +163,6 @@
     <Compile Include="DKAWrite.cs" />
     <Compile Include="EXPREP_V2\Dates.cs" />
     <Compile Include="EXPREP_V2\PODictionaryInExpRep.cs" />
-    <Compile Include="EXPREP_V2\POSource.cs" />
     <Compile Include="EXPREP_V2\Cash.cs" />
     <Compile Include="EXPREP_V2\Category.cs" />
     <Compile Include="EXPREP_V2\EXPREP_V2_WINDOW.cs">

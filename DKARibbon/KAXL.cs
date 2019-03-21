@@ -290,19 +290,19 @@ namespace DKAExcelStuff
         }        
         public static void IfError(KAXLApp kaxlApp)
         {
-            var mc = kaxlApp.MultiCellRangeData;
+            var mc = kaxlApp.SelectedRange;
                                     
             string OriginalFormula;
             string formulaWOEqualSign;
             string modifiedFormula;
 
-            var startCell = kaxlApp.WS.Cells[mc.StartRow, mc.StartCol];
-            var endCell = kaxlApp.WS.Cells[mc.EndRow, mc.EndCol];
+            var startCell = kaxlApp.WS.Cells[mc.Row.Start, mc.Col.Start];
+            var endCell = kaxlApp.WS.Cells[mc.Row.End, mc.Col.End];
             RG rg = kaxlApp.RG[startCell, endCell];
 
-            for (int row = mc.StartRow; row <= mc.EndRow; row++)
+            for (int row = mc.Row.Start; row <= mc.Row.End; row++)
             {
-                for (int col = mc.StartCol; col <= mc.EndCol; col++)
+                for (int col = mc.Col.Start; col <= mc.Col.End; col++)
                 {
                     modifiedFormula = null;
                     OriginalFormula = null;
@@ -317,13 +317,13 @@ namespace DKAExcelStuff
         }
         public static void OverWriteFormulas(KAXLApp kaxlApp)
         {
-            var mc = kaxlApp.MultiCellRangeData;
+            var mc = kaxlApp.SelectedRange;
             int LastRow = KAXL.LastRow(kaxlApp.WS, 1);
             var ws = kaxlApp.WS;
 
-            for (int col = mc.StartCol; col <= mc.EndCol; col++)
+            for (int col = mc.Col.Start; col <= mc.Col.End; col++)
             {
-                var startCell = ws.Cells[mc.StartRow, col];
+                var startCell = ws.Cells[mc.Row.Start, col];
                 var endCell = ws.Cells[LastRow, col];
 
                 RG rg = ws.Range[startCell, endCell];                
@@ -333,15 +333,15 @@ namespace DKAExcelStuff
         }
         public static void TopRowFormulas(KAXLApp kaxlApp)
         {
-            var mc = kaxlApp.MultiCellRangeData;
+            var mc = kaxlApp.SelectedRange;
             int LastRow = KAXL.LastRow(kaxlApp.WS, 1);
             var ws = kaxlApp.WS;            
 
-            for (int col = mc.StartCol; col <= mc.EndCol; col++)
+            for (int col = mc.Col.Start; col <= mc.Col.End; col++)
             {
                 string extractedFormula = ws.Cells[1, col].Value2;
 
-                var startCell = ws.Cells[mc.StartRow, col];
+                var startCell = ws.Cells[mc.Row.Start, col];
                 var endCell = ws.Cells[LastRow, col];
 
                 RG rg = ws.Range[startCell, endCell];
@@ -352,39 +352,39 @@ namespace DKAExcelStuff
         }
         public static void CADtoUSDConverter(KAXLApp kaxlApp, double exRate)
         {
-            var mc = kaxlApp.MultiCellRangeData;            
+            var mc = kaxlApp.SelectedRange;            
             var ws = kaxlApp.WS;
             //double exRate = 0.76037; //02-28-2019
             
-            for (int iRow = mc.StartRow; iRow < mc.EndRow; iRow++)
+            for (int iRow = mc.Row.Start; iRow < mc.Row.End; iRow++)
             {
-                var CAD = ws.Cells[iRow, mc.StartCol].Value2;
+                var CAD = ws.Cells[iRow, mc.Col.Start].Value2;
                 if (CAD is string)
                 {
                     if(double.TryParse(CAD, out double r))
-                        ws.Cells[iRow, mc.StartCol].Value2 = r;
+                        ws.Cells[iRow, mc.Col.Start].Value2 = r;
                 }
                 else if(CAD is double)
                 {
-                    ws.Cells[iRow, mc.StartCol].Value2 = CAD * exRate;
+                    ws.Cells[iRow, mc.Col.Start].Value2 = CAD * exRate;
                 }
             }
         }
         public static void ScrubItemNumbers(KAXLApp kaxlApp)
         {
-            var mc = kaxlApp.MultiCellRangeData;
+            var mc = kaxlApp.SelectedRange;
             var ws = kaxlApp.WS;
 
-            for (int iRow = mc.StartRow; iRow < mc.EndRow; iRow++)
+            for (int iRow = mc.Row.Start; iRow < mc.Row.End; iRow++)
             {
-                var val = ws.Cells[iRow, mc.StartCol].Value2;
+                var val = ws.Cells[iRow, mc.Col.Start].Value2;
                 if(double.TryParse(val,out double result))
                 {
-                    ws.Cells[iRow, mc.StartCol].Value2 = result;
+                    ws.Cells[iRow, mc.Col.Start].Value2 = result;
                 }
                 else
                 {
-                    ws.Cells[iRow, mc.StartCol].Value2 = val;
+                    ws.Cells[iRow, mc.Col.Start].Value2 = val;
                 }
             }
         }
@@ -395,6 +395,7 @@ namespace DKAExcelStuff
             //xlWorkbook.ExportAsFixedFormat(Excel.XlFixedFormatType.xlTypePDF, 
               //  filepath, Excel.XlFixedFormatQuality.xlQualityStandard, true, false, 1, 1, true, missing);
         }
+        public static int FindFirstRowAfterHeader(WS ws) => ws.Cells[1, 1] == null ? 3 : 2;
     }
     public class ColIDL
     {
@@ -435,23 +436,30 @@ namespace DKAExcelStuff
             }
         }
     }
+    public enum RangeType { Selected, WorkSheet} // set this up as optional parameter for constructor?
     public class KAXLApp
     {
         public xlApp XL { get; set; }
         public WB WB { get; set; }
         public WS WS { get; set; }
         public RG RG { get; set; }
-        public KAXLRange MultiCellRangeData { get; set; } 
+        public KAXLRangeSelected SelectedRange { get; set; } 
+        public KAXLRangeWorkSheet WorkSheetRange { get; set; }
         public Process Process { get; set; }
 
-        public KAXLApp()
+        public KAXLApp(RangeType rt = RangeType.Selected)
         {
             XL = new Microsoft.Office.Interop.Excel.Application();
             WB = Globals.ThisAddIn.Application.ActiveWorkbook;
             WS = WB.ActiveSheet;
             RG = Globals.ThisAddIn.Application.Selection;
-            MultiCellRangeData = new KAXLRange(RG);
-        }        
+
+            if(rt == RangeType.Selected)
+                SelectedRange = new KAXLRangeSelected(RG);
+            else if(rt == RangeType.WorkSheet)
+                WorkSheetRange = new KAXLRangeWorkSheet(WS);
+        }
+
         public static void CloseSheet(KAXLApp xlapp)
         {
             if(xlapp.Process != null)
@@ -498,23 +506,75 @@ namespace DKAExcelStuff
         }
         public class KAXLRange
         {
-            public KAXLRange(RG rg)
+            public int Start { get; set; }
+            public int End { get; set; }
+            public int Q { get; set; }
+
+            public Row Row { get; set; }
+            public Col Col { get; set; }
+        }
+
+        public class Row : KAXLRange { }
+        public class Col : KAXLRange { }
+
+        public class KAXLRangeSelected : KAXLRange
+        {
+            public KAXLRangeSelected() { }
+
+            public KAXLRangeSelected(RG rg)
             {
-                StartRow = rg.Row;
-                RowQ = rg.Rows.Count;
-                EndRow = StartRow + RowQ - 1;
+                Row = new Row()
+                {
+                    Start = rg.Row,
+                    Q = rg.Rows.Count,
+                    End = Start + Q,
+                };
 
-                StartCol = rg.Column;
-                ColQ = rg.Columns.Count;
-                EndCol = StartCol + ColQ - 1;
+                Col = new Col()
+                {
+                    Start = rg.Column,
+                    Q = rg.Columns.Count,
+                    End = Start + Q,
+                };
+            }            
+        }
+        public class KAXLRangeWorkSheet : KAXLRange
+        {
+            public KAXLRangeWorkSheet() { }
+
+            public KAXLRangeWorkSheet(WS ws)
+            {
+                Row = new Row()
+                {
+                    Start = KAXL.FindFirstRowAfterHeader(ws),
+                    End = KAXL.LastRow(ws, 1),
+                };
+                Row.Q = Row.End - Row.Start + 1;
+
+                Col = new Col()
+                {
+                    Start = 1,
+                    End = KAXL.LastCol(ws, Row.Start),
+                };
+                Col.Q = Col.End - Col.Start + 1;
+
+                RMax_Array = Row.Q + 1;
+                CMax_Array = Col.Q + 1;
+
+                RG = ws.UsedRange;
+                _valueArray = (object[,])RG.get_Value(XlRangeValueDataType.xlRangeValueDefault);
             }
-            public int StartRow { get; set; }
-            public int EndRow { get; set; }
-            public int RowQ { get; set; }
 
-            public int StartCol { get; set; }
-            public int EndCol { get; set; }
-            public int ColQ { get; set; }
+            public RG RG { get; }
+            public int RMax_Array { get; }
+            public int CMax_Array { get; }
+
+            private readonly object[,] _valueArray;
+            public object this[int r, int c]
+            {
+                get => _valueArray[r, c];
+                set => _valueArray[r, c] = value;
+            }
         }
     }    
 }

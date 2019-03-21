@@ -52,22 +52,47 @@ namespace EXPREP_V2
 
                     for (int i = 0; i < _sourceDataSplit.Length; i++)
                     {
-                        _multiLineSourceList.Add(new Source()
+                        try
                         {
-                            Requester = isMultipleRequesters ? _requesterDataSplit[i] : _datasplit[(int)DataSplitSection.Requester],
-                            CreatedBy = _datasplit[(int)DataSplitSection.Creator],
-                            Type = GetSourceType(),
-                            Code = Type == SourceType.ProdOrder ? ScrubCode(_sourceDataSplit[i]) : _sourceDataSplit[i],
-                        });
+                            _multiLineSourceList.Add(new Source()
+                            {
+                                Requester = isMultipleRequesters ? _requesterDataSplit[i] : _datasplit[(int)DataSplitSection.Requester],
+                                CreatedBy = _datasplit[(int)DataSplitSection.Creator],
+                                Type = GetSourceType(),
+                                Code = Type == SourceType.ProdOrder ? ScrubCode(_sourceDataSplit[i]) : _sourceDataSplit[i],
+                            });
+                        }
+                        catch
+                        {
+                            OriginalAttentionInfo = null;
+                            IsMultiLinePO = false;
+                            CreatedBy = null;
+                            Requester = null;
+                            Type = SourceType.Unknown;
+                            Code = null;
+                        }
                     }
                 }
                 else
                 {
-                    IsMultiLinePO = false;
-                    CreatedBy = _datasplit[(int)DataSplitSection.Creator];
-                    Requester = _datasplit[(int)DataSplitSection.Requester];
-                    Type = GetSourceType();
-                    Code = Type == SourceType.ProdOrder ? ScrubCode(_datasplit[(int)DataSplitSection.Source]) : _datasplit[(int)DataSplitSection.Source];
+                    try
+                    {
+                        IsMultiLinePO = false;
+                        CreatedBy = _datasplit[(int)DataSplitSection.Creator];
+                        Requester = _datasplit[(int)DataSplitSection.Requester];
+                        Type = GetSourceType();
+                        Code = Type == SourceType.ProdOrder ? ScrubCode(_datasplit[(int)DataSplitSection.Source]) : _datasplit[(int)DataSplitSection.Source];
+                    }
+                    catch
+                    {
+                        OriginalAttentionInfo = null;
+                        IsMultiLinePO = false;
+                        CreatedBy = null;
+                        Requester = null;
+                        Type = SourceType.Unknown;
+                        Code = null;
+                    }
+                    
                 }
             }            
         }
@@ -121,7 +146,7 @@ namespace EXPREP_V2
 
             for (int i = 0; i < (c.Length - q); i++)
             {
-                testString = (c[i] + c[i + 1] + c[i + 1]).ToString();
+                testString = (c[i] + c[i + 1] + c[i + 2]).ToString();
                 for (int j = 0; j < (int)SourceTypePrefixes.Total; j++)
                 {
                     if(testString == Convert.ToString((SourceTypePrefixes)j))

@@ -26,13 +26,13 @@ namespace EXPREP_V2
 
             Dates = new Dates(poLine[c.RevisedSchedDelDate], poLine[c.OrigSchedDelDate], 
                 poLine[c.CreatedDate]);
-            Status = new Status(poLine[c.LineStatus],M,PONum,Convert.ToString(LineNumber));
+            Status = new Status(poLine[c.LineStatus],M,PONum,Convert.ToString(LineNumber),poLine[c.ApprovalStatus]);
 
             if (IsLineInExpRep)
             {
                 CheckAndUpdateReceivedAndRevisedDate();
             }            
-            else if(M.AllPOsDict.IsInAllPOReport(PONum))
+            else
             {
                 Source = new Source(poLine[c.AttentionInformation]);
                 Cash = new Cash(poLine[c.Currency], poLine[c.UnitPrice], poLine[c.NetAmount], poLine[c.CreatedDate], M);
@@ -43,16 +43,12 @@ namespace EXPREP_V2
 
                 WH = FormatWH(poLine[c.Warehouse]);
                 Receiver = FormatReceiver();
-
-                //POSource = new POSource(poLine[c.AttentionInformation]);
-                
             }            
         }
         private void CheckAndUpdateReceivedAndRevisedDate() 
         {
             PODictionaryInExpRep po = M.PODictionaryInExpRep[PONum + Math.Floor(LineNumber)];
             DateTime revisedSchedDelDate = Dates.RevisedSchedDelDate.MostRecentShedDeliveryDate;
-            //Status allPOStatus = M.AllPOsDict[PONum];
 
             if (po.MostRecRevDate != revisedSchedDelDate || revisedSchedDelDate == DateTime.MinValue)
             {
@@ -225,7 +221,7 @@ namespace EXPREP_V2
                     }
                     POLine po = new POLine(rowDataL, M);
 
-                    if (!po.IsLineInExpRep && M.AllPOsDict.IsInAllPOReport(po.PONum))
+                    if (!po.IsLineInExpRep)
                     {
                         if (po.Source.IsMultiLinePO)
                         {

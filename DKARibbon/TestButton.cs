@@ -24,7 +24,23 @@ namespace DKAExcelStuff
     {
         public static void TestM(KAXLApp kaxlApp)
         {
-            KAXL.ScrubItemNumbers(kaxlApp);
+            int rowQ = kaxlApp.WorkSheetRange.Row.Q;
+            int startRow = kaxlApp.WorkSheetRange.Row.Start;
+            int endRow = kaxlApp.WorkSheetRange.Row.End;
+
+            int startCol = kaxlApp.WorkSheetRange.Col.Start;
+            int endCol = kaxlApp.WorkSheetRange.Col.End;
+            int colQ = kaxlApp.WorkSheetRange.Col.Q;
+            
+            object[,] testArray = new object[kaxlApp.WorkSheetRange.Row.Q + 1, kaxlApp.WorkSheetRange.Col.Q + 1];
+
+            for (int r = 1; r <= kaxlApp.WorkSheetRange.Row.Q; r++)
+            {
+                for (int c = 1; c <= kaxlApp.WorkSheetRange.Col.Q; c++)
+                {
+                    testArray[r, c] = kaxlApp.WorkSheetRange[r, c];
+                }
+            }
         }
     }  
 }

@@ -31,7 +31,8 @@ namespace EXPREP_V2
         public int Quantity => colIDL.GetColNum("Quantity");
         public int UnitPrice => colIDL.GetColNum("Unit price");
         public int NetAmount => colIDL.GetColNum("Net amount");
-        public int AttentionInformation => colIDL.GetColNum("Attention information");         
+        public int AttentionInformation => colIDL.GetColNum("Attention information");
+        public int ApprovalStatus => colIDL.GetColNum("Approval Status");
     }
     public class ExpRepColumn
     {

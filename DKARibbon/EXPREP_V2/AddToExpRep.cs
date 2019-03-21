@@ -73,7 +73,6 @@ namespace EXPREP_V2
 
                     // Date Class                
                     ws.Cells[nextRow, dCol.Month].Value2 = po.Dates.Month;
-                    //ws.Cells[nextRow, dCol.OnTime].Value2 = po.Dates.OnTime;
                     ws.Cells[nextRow, dCol.OriginalSchedDelDate].Value2 = po.Dates.OrigSchedDelDate;
                     ws.Cells[nextRow, dCol.POCreatedDate].Value2 = po.Dates.POCreatedDate;
                     ws.Cells[nextRow, dCol.Quarter].Value2 = po.Dates.Quarter;
@@ -81,13 +80,13 @@ namespace EXPREP_V2
                     ws.Cells[nextRow, dCol.DateAdded].Value2 = DateTime.Today;
 
                     // attempt to leave blank dates
-                    DateTime revisedSchedDelDate = po.Dates.RevisedSchedDelDate.MostRecentShedDeliveryDate;
-                    if(revisedSchedDelDate != DateTime.MinValue)
-                    {
-                        ws.Cells[nextRow, dCol.RevisedSchedDelDate].Value2 = revisedSchedDelDate;
-                    }
+                    //DateTime revisedSchedDelDate = po.Dates.RevisedSchedDelDate.MostRecentShedDeliveryDate;
+                    //if(revisedSchedDelDate != DateTime.MinValue)
+                    //{
+                    //    ws.Cells[nextRow, dCol.RevisedSchedDelDate].Value2 = revisedSchedDelDate;
+                    //}
 
-                    //ws.Cells[nextRow, dCol.RevisedSchedDelDate].Value2 = po.Dates.RevisedSchedDelDate.MostRecentShedDeliveryDate;
+                    ws.Cells[nextRow, dCol.RevisedSchedDelDate].Value2 = po.Dates.RevisedSchedDelDate.MostRecentShedDeliveryDate;
                     ws.Cells[nextRow, dCol.WH].Value2 = po.WH;
 
                     // Category Class

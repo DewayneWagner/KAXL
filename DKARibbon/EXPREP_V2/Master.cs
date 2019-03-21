@@ -10,7 +10,7 @@ namespace EXPREP_V2
 {
     public class Master
     {
-        public enum SheetNamesE { Nada, ExpRep, Rules, Pivot, PTCA, PTUS, HMCA, MasterData, AllPOs }
+        public enum SheetNamesE { Nada, ExpRep, Rules, Pivot, PTCA, PTUS, HMCA, MasterData }
         public enum MasterDataColumnsE {z,ExRateKey,ExRateCurrFrom,ExRateCurrTo,ExRateYear,ExRateMonth,ExRate,z1,
             z2,z3,z4,z5,ItemNum,ItemDesc,ItemCat,z6,z7,VendorAccount,VendorName }
 
@@ -53,9 +53,6 @@ namespace EXPREP_V2
             
             CategoryReferenceDictionary = new CategoryReferenceDictionary(this);
                         
-            // need to build list of current PO's in "All PO's Status" sheet, to get Approval Status
-            AllPOsDict = new Status(this); // to create list of new PO's
-
             // start reading lines of data from the rawData (cycles between tabs)
             POLinesList = new POLinesList(this);
             AddToExpRep a = new AddToExpRep(this);
@@ -69,8 +66,7 @@ namespace EXPREP_V2
         public VendorDict VendorDict { get; set; }
         public ItemDict ItemDict { get; set; }
         public POLinesList POLinesList { get; set; }
-        public PODictionaryInExpRep PODictionaryInExpRep { get; set; }
-        public Status AllPOsDict { get; set; }
+        public PODictionaryInExpRep PODictionaryInExpRep { get; set; }        
         public CategoryReferenceDictionary CategoryReferenceDictionary {get; set;}
         public ReceivedDateList ReceivedDateList { get; set; }
         public RevisedSchedDelDatesToUpdate RevisedSchedDelDatesToUpdate { get; set; }
