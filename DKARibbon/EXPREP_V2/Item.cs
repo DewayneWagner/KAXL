@@ -2,13 +2,24 @@
 using System.Collections.Generic;
 using WS = Microsoft.Office.Interop.Excel.Worksheet;
 using DKAExcelStuff;
+using MDC = EXPREP_V2.Master.MasterDataColumnsE;
 
 namespace EXPREP_V2
 {
     public class Item
     {
+        private enum ItemColumnOrder { Nada,Num,Desc,Cat}
         Master M;
-        public Item(Master m) => M = m;
+        public Item(Master m)
+        {
+            M = m;
+            _itemDictionary = new Dictionary<string, Item>();
+            _itemNumbersThatArentInDictL = new List<string>();
+            LoadItemDictionary();
+        }
+
+        private readonly Dictionary<string, Item> _itemDictionary;
+        private List<string> _itemNumbersThatArentInDictL;
 
         public Item() {}
         
@@ -21,33 +32,48 @@ namespace EXPREP_V2
         public string Num { get; set; }
         public string Desc { get; set; }
         public string Cat { get; set; }
-    }
-    public class ItemDict
-    {
-        private readonly Dictionary<string,Item> itemDict;
-        private List<string> itemNumbersThatArentInDictL;
 
-        Master M;
-        public ItemDict(Master m)
+        private void LoadItemDictionary()
         {
-            M = m;
-            itemDict = new Dictionary<string, Item>();
-            itemNumbersThatArentInDictL = new List<string>();
-            LoadDict();
+            M.kaxlApp.WS = M.kaxlApp.WB.Sheets[(int)Master.SheetNamesE.MasterData];
+
+            WS ws = M.kaxlApp.WS;
+            var k = M.kaxlApp.KAXL_RG;
+
+            M.kaxlApp.RG = ws.Range[ws.Cells[KAXL.FindFirstRowAfterHeader(ws), (int)MDC.ItemNum], ws.Cells[KAXL.LastRow(ws, (int)MDC.ItemNum), (int)MDC.ItemCat]];
+            k = new KAXLApp.KAXLRange(M.kaxlApp, RangeType.CodedRangeSetKAXLAppRG);
+
+            string itemNum;
+
+            for (int r = 1; r < k.Row.End; r++)
+            {
+                itemNum = Convert.ToString(k[r, (int)ItemColumnOrder.Num]);
+
+                if (_itemDictionary.ContainsKey(itemNum) || itemNum == null)
+                {
+                    itemNum = null;
+                }
+                else
+                {
+                    _itemDictionary.Add(itemNum, new Item()
+                    {
+                        Num = itemNum,
+                        Desc = (string)k[r, (int)ItemColumnOrder.Desc],
+                        Cat = (string)k[r, (int)ItemColumnOrder.Cat]
+                    });
+                }
+            }
         }
-
-        public ItemDict() { }
-
         public Item this[string key]
         {
-            get => key != null && itemDict.ContainsKey(key) && key.Length > 5 ? 
-                itemDict[key] : AddItemToItemNumbersThatArentInDictL(key);
-            set => itemDict[key] = value;
+            get => key != null && _itemDictionary.ContainsKey(key) && key.Length > 5 ?
+                _itemDictionary[key] : AddItemToItemNumbersThatArentInDictL(key);
+            ///set => itemDict[key] = value;
         }
         public Item AddItemToItemNumbersThatArentInDictL(string key)
         {
-            if(key!=null && key.Length > 5)
-                itemNumbersThatArentInDictL.Add(key);
+            if (key != null && key.Length > 5)
+                _itemNumbersThatArentInDictL.Add(key);
 
             string num = key != null ? key : null;
             string desc = null;
@@ -55,41 +81,21 @@ namespace EXPREP_V2
 
             return new Item(num, desc, cat);
         }
-        private void LoadDict()
-        {
-            int LR, startRow = 2, numC = 12, descC = 13, catC = 14;
-
-            WS ws = M.kaxlApp.WB.Sheets[(int)Master.SheetNamesE.MasterData];
-            LR = KAXL.LastRow(ws, numC);
-            string itemNum, itemDesc, itemCat;
-
-            for (int j = startRow; j <= LR; j++)
-            {
-                var val = ws.Cells[j, numC].Value2;
-                itemNum = (val is string) ? val : Convert.ToString(val);
-                itemDesc = ws.Cells[j, descC].Value2;
-                itemCat = ws.Cells[j, catC].Value2;
-
-                Item i = new Item(itemNum, itemDesc, itemCat);
-
-                if(itemNum != null && !itemDict.ContainsKey(itemNum))
-                    itemDict.Add(itemNum,i);
-            }
-        }
-        public List<string> GetItemNumbersThatArentInDictList() => itemNumbersThatArentInDictL;
-        public bool IsItemsThatArentInDict() => (itemNumbersThatArentInDictL.Count > 0) ? true : false;
+        public List<string> GetItemNumbersThatArentInDictList() => _itemNumbersThatArentInDictL;
 
         public Item GetItem(string key)
         {
-            if (itemDict.ContainsKey(key)) 
+            if (_itemDictionary.ContainsKey(key))
             {
-                return itemDict[key];
+                return _itemDictionary[key];
             }
             else
             {
-                itemNumbersThatArentInDictL.Add(key);
+                _itemNumbersThatArentInDictL.Add(key);
                 return null;
             }
-        }        
+        }
+
+        public bool IsItemsThatArentInDict() => _itemNumbersThatArentInDictL.Count > 0 ? true : false;
     }
 }

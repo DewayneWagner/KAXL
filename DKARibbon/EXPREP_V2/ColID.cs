@@ -62,7 +62,8 @@ namespace EXPREP_V2
         public int USD => colIDL.GetColNum("TotalUSD");
         public int UnitPriceCAD => colIDL.GetColNum("UnitPriceCAD");
         public int UnitPriceUSD => colIDL.GetColNum("UnitPriceUSD");
-        public int Curr => colIDL.GetColNum("Currency"); 
+        public int Curr => colIDL.GetColNum("Currency");
+        public int NetAmount => colIDL.GetColNum("Net Amount");
 
         // Dates Class
         public int Year => colIDL.GetColNum("Year");

@@ -35,7 +35,6 @@ namespace EXPREP_V2
             // initialize classes to give access to master
             Cash c = new Cash(this);
             POLine p = new POLine(this);
-            Item i = new Item(this);
             Category cat = new Category(this);
 
             // Properties to initialize
@@ -45,9 +44,9 @@ namespace EXPREP_V2
             ReceivedDateList = new ReceivedDateList(this);
             RevisedSchedDelDatesToUpdate = new RevisedSchedDelDatesToUpdate(this);
 
-            VendorDict = new VendorDict(this); // to initialize new vendordict
-            ItemDict = new ItemDict(this); // to initialize new itemdict
-            ExRateDict = new ExRateDict(kaxlApp);
+            VendorDict = new Vendor(this); // to initialize new vendordict
+            ItemDict = new Item(this); // to initialize new itemdict
+            ExRateDict = new ExRate(this);
 
             PODictionaryInExpRep = new PODictionaryInExpRep(this);
             
@@ -60,11 +59,11 @@ namespace EXPREP_V2
 
         public Category Category { get; set; }
         public KAXLApp kaxlApp { get; set; }
-        public ExRateDict ExRateDict { get; set; }
+        public ExRate ExRateDict { get; set; }
         public SourceColID SColID { get; set; }
         public ExpRepColumn ExpRepColumn { get; set; }
-        public VendorDict VendorDict { get; set; }
-        public ItemDict ItemDict { get; set; }
+        public Vendor VendorDict { get; set; }
+        public Item ItemDict { get; set; }
         public POLinesList POLinesList { get; set; }
         public PODictionaryInExpRep PODictionaryInExpRep { get; set; }        
         public CategoryReferenceDictionary CategoryReferenceDictionary {get; set;}

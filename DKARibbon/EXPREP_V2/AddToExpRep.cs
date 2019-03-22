@@ -51,6 +51,7 @@ namespace EXPREP_V2
                     ws.Cells[nextRow, dCol.UnitPriceCAD].Value2 = po.Cash.UnitPriceCAD;
                     ws.Cells[nextRow, dCol.UnitPriceUSD].Value2 = po.Cash.UnitPriceUSD;
                     ws.Cells[nextRow, dCol.Curr].Value2 = po.Cash.Currency;
+                    ws.Cells[nextRow, dCol.NetAmount].Value2 = po.Cash.NetAmount;
 
                     // No Class
                     ws.Cells[nextRow, dCol.Entity].Value2 = po.Entity;

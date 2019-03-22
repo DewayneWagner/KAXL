@@ -94,6 +94,9 @@ namespace DKARibbon
             frmEXPREP_V2_WINDOW expRepForm = new frmEXPREP_V2_WINDOW(new KAXLApp());
             expRepForm.ShowDialog();
 
+            //frmEXPREP_V2_WINDOW expRepForm = new frmEXPREP_V2_WINDOW(new KAXLApp());
+            //expRepForm.ShowDialog();
+
             //KAXLApp kaxlApp = new KAXLApp();
             //System.Windows.Forms.Application.EnableVisualStyles();
             //System.Windows.Forms.Application.Run(new frmEXPREP_V2_WINDOW(kaxlApp));

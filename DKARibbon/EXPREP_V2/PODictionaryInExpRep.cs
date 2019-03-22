@@ -85,8 +85,7 @@ namespace EXPREP_V2
                 string vendorName = ws.Cells[iRow, M.ExpRepColumn.VendorName].Value2;
                 if(vendorName == null)
                 {
-                    Vendor v = M.VendorDict[vendorName];
-                    ws.Cells[iRow, M.ExpRepColumn.VendorName].Value2 = v.Name;
+                    ws.Cells[iRow, M.ExpRepColumn.VendorName].Value2 = M.VendorDict[vendorName];
                 }
 
                 PODictionaryInExpRep po = new PODictionaryInExpRep(status, poNum, poLineNum, revDate, 

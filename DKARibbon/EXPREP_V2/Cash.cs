@@ -65,6 +65,6 @@ namespace EXPREP_V2
             }
         }        
         public string Currency { get; set; }        
-        private double NetAmount { get; set; }
+        public double NetAmount { get; set; }
     }    
 }

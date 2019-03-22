@@ -1,70 +1,73 @@
 ﻿using System.Collections.Generic;
 using WS = Microsoft.Office.Interop.Excel.Worksheet;
 using DKAExcelStuff;
+using MDC = EXPREP_V2.Master.MasterDataColumnsE;
 
 namespace EXPREP_V2
 {
     public class Vendor
     {
+        Master m;
+        private readonly Dictionary<string, Vendor> _vendorDictionary;
+        private readonly List<string> _vendorNamesNotInDictionary;
+        private enum VendorColumnOrder { Nada, Name, Number }
+
         public Vendor() { }
 
-        public Vendor(string code, string name)
+        public Vendor(Master master)
         {
-            Code = code;
-            Name = name;
+            m = master;
+            _vendorDictionary = new Dictionary<string, Vendor>();
+            _vendorNamesNotInDictionary = new List<string>();
+            LoadVendorDictionary();
         }
+
         public string Code { get; set; }
         public string Name { get; set; }
 
-    }
-    public class VendorDict
-    {
-        private readonly Dictionary<string, Vendor> vendorDict;
-        private List<string> vendorNumbersThatArentInDictL;
-
-        public VendorDict() { }
-
-        private Master M;
-        private int LR, startRow = 2;
-
-        public VendorDict(Master m)
+        private void LoadVendorDictionary()
         {
-            M = m;
-            vendorDict = new Dictionary<string, Vendor>();
-            LoadDict();
-            vendorNumbersThatArentInDictL = new List<string>();
-        }
+            m.kaxlApp.WS = m.kaxlApp.WB.Sheets[(int)Master.SheetNamesE.MasterData];
 
-        private void LoadDict()
-        {
-            WS ws = M.kaxlApp.WB.Sheets[(int)Master.SheetNamesE.MasterData];
-            LR = KAXL.LastRow(ws, (int)Master.MasterDataColumnsE.VendorAccount);
+            WS ws = m.kaxlApp.WS;
+            var k = m.kaxlApp.KAXL_RG;
 
-            for (int i = startRow; i <= LR; i++)
+            m.kaxlApp.RG = ws.Range[ws.Cells[KAXL.FindFirstRowAfterHeader(ws), (int)MDC.VendorName],
+                ws.Cells[KAXL.LastRow(ws, (int)MDC.VendorName), (int)MDC.VendorAccount]];
+            k = new KAXLApp.KAXLRange(m.kaxlApp, RangeType.CodedRangeSetKAXLAppRG);
+            string name;
+
+            for (int r = 1; r < k.Row.End; r++)
             {
-                Vendor v = new Vendor(ws.Cells[i, (int)Master.MasterDataColumnsE.VendorAccount].Value2, 
-                    ws.Cells[i, (int)Master.MasterDataColumnsE.VendorName].Value2);
-                if (!vendorDict.ContainsKey(v.Code))
-                    vendorDict.Add(v.Code, v);
+                name = (string)k[r, (int)VendorColumnOrder.Name];
+
+                if (_vendorDictionary.ContainsKey(name))
+                {
+                    name = null;
+                }
+                else
+                {
+                    _vendorDictionary.Add(name, new Vendor()
+                    {
+                        Name = name,
+                        Code = (string)k[r, (int)VendorColumnOrder.Number],
+                    });
+                }                
             }
         }
-        public Vendor this[string key]
+
+        public Vendor this[string key] => key != null && _vendorDictionary.ContainsKey(key) ? _vendorDictionary[key] : AddToVendorNumbersThatArentInDict(key);
+
+        private Vendor AddToVendorNumbersThatArentInDict(string key)
         {
-            get => key != null && vendorDict.ContainsKey(key) ? vendorDict[key] : AddTooVendorNumbersThatArentInDictL(key);
-            set => vendorDict[key] = value;
+            _vendorNamesNotInDictionary.Add(key);
+            return new Vendor()
+            {
+                Name = key,
+                Code = null,
+            };
         }
-
-        private Vendor AddTooVendorNumbersThatArentInDictL(string key)
-        {
-            vendorNumbersThatArentInDictL.Add(key);
-
-            string code = (key != null) ? key : "Code Missing";
-            string name = "Name not on list";
-            
-            return new Vendor(code, name);
-        }
-
-        public List<string> VendorNumbersThatArentInDictL() => vendorNumbersThatArentInDictL;
-        public bool IsVendorNumbersThatArentInDict() => (vendorNumbersThatArentInDictL.Count > 0) ? true : false;
-    }
+        public List<string> VendorNumbersThatArentInDictL() => _vendorNamesNotInDictionary;
+        public bool IsVendorNumbersThatArentInDict() => (_vendorNamesNotInDictionary.Count > 0) ? true : false;
+    }    
 }
