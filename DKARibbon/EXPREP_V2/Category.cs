@@ -16,7 +16,7 @@ namespace EXPREP_V2
 
         public Category(string cat, Item item, Master M)
         {
-            if(item.Cat != null)
+            if(item != null && item.Cat != null)
             {
                 CleanCategory = item.Cat;
             }

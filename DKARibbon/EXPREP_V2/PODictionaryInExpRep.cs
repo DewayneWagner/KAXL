@@ -12,21 +12,16 @@ namespace EXPREP_V2
     {
         public PODictionaryInExpRep() { }
 
-        Master M;
-        private readonly Dictionary<string, PODictionaryInExpRep> poLinesInDict;
+        Master m;
+        private readonly Dictionary<string, PODictionaryInExpRep> _poDictionaryInExpRep;
 
-        public PODictionaryInExpRep(string status, string poNum, double poLineNum, DateTime revDate, int expRepXLLineNum, 
-            bool isReceivedDatePresent)
+        public PODictionaryInExpRep(Master master)
         {
-            Status = new Status();
-            Status.ExpRepStatus = status;
-            PONum = poNum;
-            POLineNum = poLineNum;
-            MostRecRevDate = revDate;
-            ExpRepXLLineNum = expRepXLLineNum;
-            IsReceivedDatePresent = isReceivedDatePresent;
+            m = master;
+            _poDictionaryInExpRep = new Dictionary<string, PODictionaryInExpRep>();
+            LoadDictionaryWithPOs();
         }
-        
+
         public string PONum { get; set; }
         public double POLineNum { get; set; }
         public Status Status { get; set; }
@@ -34,81 +29,81 @@ namespace EXPREP_V2
         public DateTime MostRecRevDate { get; set; }
         public bool IsReceivedDatePresent { get; set; }
 
-        public PODictionaryInExpRep(Master m)
+        private void LoadDictionaryWithPOs()
         {
-            M = m;
-            poLinesInDict = new Dictionary<string, PODictionaryInExpRep>();
+            m.kaxlApp.WS = m.kaxlApp.WB.Sheets[(int)Master.SheetNamesE.ExpRep];
 
-            WS ws = M.kaxlApp.WB.Sheets[(int)Master.SheetNamesE.ExpRep];
-            int LR = KAXL.LastRow(ws, 1) + 1;
+            WS ws = m.kaxlApp.WS;
+            var k = m.kaxlApp.KAXL_RG;
+            k = new KAXLApp.KAXLRange(m.kaxlApp, RangeType.WorkSheet);
 
-            string status, poNum, key, recDateString;
-            double poLineNum;
-            DateTime revDate;
-            int expRepXLLineNum;
-            bool isRecDatePresent;
-            string itemNum, itemDesc;
+            m.errorTracker.Process = "Reading Expedite Report";
+            string poNum, key;
+            double lineNum;
 
-            for (int iRow = 3; iRow < LR; iRow++)
+            for (int r = KAXL.FindFirstRowAfterHeader(ws); r < k.Row.End; r++)
             {
-                // for testing, to determine row which is erroring out
-                //ws.Cells[1,1].Value2 = iRow;
+                m.errorTracker.LineNumber = Convert.ToString(r);
+                poNum = (string)k[r, m.ExpRepColumn.PONumber];
+                lineNum = Math.Round((double)k[r, m.ExpRepColumn.LineNumber]);
+                key = poNum + Convert.ToString(lineNum);
+                DateTime mostRecentRevisedDeliveryDate;
 
-                M.errorTracker.Process = "Reading Expedite Report";
-                M.errorTracker.LineNumber = Convert.ToString(iRow);
-
-                status = ws.Cells[iRow, M.ExpRepColumn.Status].Value2;
-                poNum = ws.Cells[iRow, M.ExpRepColumn.PONumber].Value2;
-                poLineNum = Math.Floor(ws.Cells[iRow, M.ExpRepColumn.LineNumber].Value2);
-                
-                var recDate = ws.Cells[iRow, M.ExpRepColumn.RecDate].Value2;
-                recDateString = (recDate is string) ? recDate : Convert.ToString(recDate);
-                isRecDatePresent = (recDateString is null) ? false : true;
-
-                var rd = ws.Cells[iRow, M.ExpRepColumn.RevisedSchedDelDate].Value;
-                revDate = (rd is DateTime) ? rd : Convert.ToDateTime(rd);
-                expRepXLLineNum = iRow;
-
-                // check for missing item descriptions & categories
-                var itemNumber = ws.Cells[iRow, M.ExpRepColumn.ItemNumber].Value;
-                itemDesc = ws.Cells[iRow, M.ExpRepColumn.ItemDescription].Value;
-                itemNum = (itemNumber is string) ? itemNumber : Convert.ToString(itemNumber);
-                
-                if(itemNumber != null && itemDesc == null)
+                if (_poDictionaryInExpRep.ContainsKey(key))
                 {
-                    // do this if there is an item number, but not description
-                    Item i = M.ItemDict[itemNum];
-                    ws.Cells[iRow, M.ExpRepColumn.ItemDescription].Value2 = i.Desc;
+                    key = null;
                 }
-
-                // check if vendor name is present, and add to update list if not.
-                string vendorName = ws.Cells[iRow, M.ExpRepColumn.VendorName].Value2;
-                if(vendorName == null)
+                else
                 {
-                    ws.Cells[iRow, M.ExpRepColumn.VendorName].Value2 = M.VendorDict[vendorName];
+                    var rev = k[r, m.ExpRepColumn.RevisedSchedDelDate];
+
+                    if (rev != null)
+                        mostRecentRevisedDeliveryDate = Convert.ToDateTime(rev);
+                    else
+                        mostRecentRevisedDeliveryDate = DateTime.MinValue;
+
+                    //var mostRecRevDate = k[r, m.ExpRepColumn.RevisedSchedDelDate] == null ? null : (DateTime)k[r, m.ExpRepColumn.RevisedSchedDelDate];
+                    _poDictionaryInExpRep.Add(key, new PODictionaryInExpRep()
+                    {
+                        ExpRepXLLineNum = r,
+                        IsReceivedDatePresent = (k[r,m.ExpRepColumn.RecDate] is null) ? false : true,
+                        MostRecRevDate = mostRecentRevisedDeliveryDate,
+                        POLineNum = lineNum,
+                        PONum = poNum,
+                        Status = new Status()
+                        {
+                            ExpRepStatus = (string)k[r,m.ExpRepColumn.Status],
+                            PONum = poNum,
+                        },
+                    });
+
+                    string itemNum = Convert.ToString(k[r, m.ExpRepColumn.ItemNumber]);
+                    string vendName = (string)k[r, m.ExpRepColumn.VendorName];
+
+                    if (itemNum != null && (string)k[r,m.ExpRepColumn.ItemDescription] == null)
+                    {
+                        // do this if there is an item number, but not description
+                        Item i = m.ItemDict[itemNum];
+                        ws.Cells[r, m.ExpRepColumn.ItemDescription].Value2 = i.Desc;
+                    }
+
+                    // check if vendor name is present, and add to update list if not.
+                    if (vendName == null)
+                    {
+                        ws.Cells[r, m.ExpRepColumn.VendorName].Value2 = m.VendorDict[vendName];
+                    }
                 }
-
-                PODictionaryInExpRep po = new PODictionaryInExpRep(status, poNum, poLineNum, revDate, 
-                    expRepXLLineNum, isRecDatePresent);
-
-                key = poNum + poLineNum;
-
-                if (!poLinesInDict.ContainsKey(key))
-                {
-                    poLinesInDict.Add(key, po);
-                }
-            }            
+            }
         }
-        //public bool IsDuplicate(string poNum, double lineNum) => poLinesInDict.ContainsKey(poNum + lineNum);        
-        public bool IsDuplicate(string poNum, double lineNum) => 
-            (poLinesInDict.ContainsKey(poNum + Convert.ToString(Math.Floor(lineNum))))? true : false;            
-        
+        public bool IsDuplicate(string poNum, double lineNum) =>
+            (_poDictionaryInExpRep.ContainsKey(poNum + Convert.ToString(Math.Floor(lineNum)))) ? true : false;
+
+        public bool ContainsKey(string key) => _poDictionaryInExpRep.ContainsKey(key);
+
         public PODictionaryInExpRep this[string key]
-        {            
-            get => key != null && poLinesInDict.ContainsKey(key) || 
-                poLinesInDict.ContainsKey(Convert.ToString(Math.Floor(Convert.ToDouble(key))))
-                ? poLinesInDict[key] : null;
-            set => poLinesInDict[key] = value;
+        {
+            get => key != null && _poDictionaryInExpRep.ContainsKey(key) ? _poDictionaryInExpRep[key] : null;
+            set => _poDictionaryInExpRep[key] = value;
         }
     }
 }

@@ -25,7 +25,7 @@ namespace EXPREP_V2
             if (ws.AutoFilter != null)
                 ws.AutoFilterMode = false;
 
-            int length = M.POLinesList.POLineListQ;
+            int length = M.POLinesList.ListQ;
 
             ExpRepColumn dCol = new ExpRepColumn(ws);
             int nextRow = KAXL.LastRow(ws,1) + 1;
@@ -33,7 +33,7 @@ namespace EXPREP_V2
             // load list with column headings
             for (int i = 1; i < length; i++)
             {                
-                POLine po = M.POLinesList[i];
+                ScrubbedPOLine po = M.POLinesList[i];
 
                 if(po.Status.CleanStatus != "Canceled")
                 {
@@ -69,8 +69,8 @@ namespace EXPREP_V2
                     ws.Cells[nextRow, dCol.Receiver].Value2 = po.Receiver;
 
                     // Item Class
-                    ws.Cells[nextRow, dCol.ItemDescription].Value2 = po.Item.Desc;
-                    ws.Cells[nextRow, dCol.ItemNumber].Value2 = po.Item.Num;
+                    ws.Cells[nextRow, dCol.ItemDescription].Value2 = po.ItemX.Desc;
+                    ws.Cells[nextRow, dCol.ItemNumber].Value2 = po.ItemX.Num;
 
                     // Date Class                
                     ws.Cells[nextRow, dCol.Month].Value2 = po.Dates.Month;
@@ -79,13 +79,6 @@ namespace EXPREP_V2
                     ws.Cells[nextRow, dCol.Quarter].Value2 = po.Dates.Quarter;
                     ws.Cells[nextRow, dCol.Year].Value2 = po.Dates.Year;
                     ws.Cells[nextRow, dCol.DateAdded].Value2 = DateTime.Today;
-
-                    // attempt to leave blank dates
-                    //DateTime revisedSchedDelDate = po.Dates.RevisedSchedDelDate.MostRecentShedDeliveryDate;
-                    //if(revisedSchedDelDate != DateTime.MinValue)
-                    //{
-                    //    ws.Cells[nextRow, dCol.RevisedSchedDelDate].Value2 = revisedSchedDelDate;
-                    //}
 
                     ws.Cells[nextRow, dCol.RevisedSchedDelDate].Value2 = po.Dates.RevisedSchedDelDate.MostRecentShedDeliveryDate;
                     ws.Cells[nextRow, dCol.WH].Value2 = po.WH;

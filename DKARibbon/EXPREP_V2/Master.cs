@@ -33,9 +33,8 @@ namespace EXPREP_V2
             ExpRepColumn = new ExpRepColumn(kaxlApp.WB.Sheets[(int)SheetNamesE.ExpRep]);
 
             // initialize classes to give access to master
-            Cash c = new Cash(this);
-            POLine p = new POLine(this);
-            Category cat = new Category(this);
+            //Cash c = new Cash(this);
+            //Category cat = new Category(this);
 
             // Properties to initialize
             Dates = new Dates(this);
@@ -53,7 +52,7 @@ namespace EXPREP_V2
             CategoryReferenceDictionary = new CategoryReferenceDictionary(this);
                         
             // start reading lines of data from the rawData (cycles between tabs)
-            POLinesList = new POLinesList(this);
+            POLinesList = new ScrubbedPOLine(this);
             AddToExpRep a = new AddToExpRep(this);
         }
 
@@ -64,7 +63,7 @@ namespace EXPREP_V2
         public ExpRepColumn ExpRepColumn { get; set; }
         public Vendor VendorDict { get; set; }
         public Item ItemDict { get; set; }
-        public POLinesList POLinesList { get; set; }
+        public ScrubbedPOLine POLinesList { get; set; }
         public PODictionaryInExpRep PODictionaryInExpRep { get; set; }        
         public CategoryReferenceDictionary CategoryReferenceDictionary {get; set;}
         public ReceivedDateList ReceivedDateList { get; set; }

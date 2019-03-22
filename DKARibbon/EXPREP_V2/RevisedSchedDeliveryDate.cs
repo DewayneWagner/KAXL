@@ -20,6 +20,18 @@ namespace EXPREP_V2
         public DateTime MostRecentShedDeliveryDate { get; set; }
         public int RowToUpdate { get; set; }
 
+        public RevisedSchedDeliveryDate(DateTime revDate, Master m, string poNum, double lineNum, int row)
+        {
+            MostRecentShedDeliveryDate = revDate;
+
+            string key = poNum + Convert.ToString(lineNum);
+
+            if(m.PODictionaryInExpRep[key].MostRecRevDate != MostRecentShedDeliveryDate)
+            {
+                m.RevisedSchedDelDatesToUpdate.AddToUpdateList(row, MostRecentShedDeliveryDate);
+            }                
+        }
+
         public RevisedSchedDeliveryDate(int row, DateTime revDate)
         {
             RowToUpdate = row;
