@@ -161,7 +161,8 @@
     <Compile Include="CreateDataTable.cs" />
     <Compile Include="DKARibbon.cs" />
     <Compile Include="DKAWrite.cs" />
-    <Compile Include="EXPREP_V2\Dates.cs" />
+    <Compile Include="EXPREP_V2\AllDates.cs" />
+    <Compile Include="EXPREP_V2\Junk\Dates.cs" />
     <Compile Include="EXPREP_V2\PODictionaryInExpRep.cs" />
     <Compile Include="EXPREP_V2\Cash.cs" />
     <Compile Include="EXPREP_V2\Category.cs" />
@@ -174,9 +175,9 @@
     <Compile Include="EXPREP_V2\ExRate.cs" />
     <Compile Include="EXPREP_V2\Item.cs" />
     <Compile Include="EXPREP_V2\Master.cs" />
-    <Compile Include="EXPREP_V2\POLine.cs" />
-    <Compile Include="EXPREP_V2\ReceivedDate.cs" />
-    <Compile Include="EXPREP_V2\RevisedSchedDeliveryDate.cs" />
+    <Compile Include="EXPREP_V2\Junk\POLine.cs" />
+    <Compile Include="EXPREP_V2\Junk\ReceivedDate.cs" />
+    <Compile Include="EXPREP_V2\Junk\RevisedSchedDeliveryDate.cs" />
     <Compile Include="EXPREP_V2\ScrubbedPOLine.cs" />
     <Compile Include="EXPREP_V2\Source.cs" />
     <Compile Include="EXPREP_V2\Status.cs" />

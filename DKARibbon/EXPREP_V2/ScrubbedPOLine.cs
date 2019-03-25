@@ -37,13 +37,17 @@ namespace EXPREP_V2
         public Category Category { get; set; }
         public Item ItemX { get; set; }
         public Source Source { get; set; }
-        public Dates Dates { get; set; }
-        public string WH => WH?.Substring(0, 3);
+        public AllDates Dates { get; set; }
+
+        public string WH { get; set; }
+        public string GetWH(string wh) => wh.Length >= 3 && wh != null ? wh.Substring(0, 3) : null;
+            
         public Status Status { get; set; }
         public String Direct => ItemX.Num == null ? "Indirect" : "Direct";
         public string Entity => PONum.Substring(0, 4);
         public bool ICO => Vendor != null && (Vendor.Code.Length == 4) ? true : false;
         public bool IsLineInExpRep => (m.PODictionaryInExpRep.IsDuplicate(PONum, Math.Floor(LineNumber))) ? true : false;
+        public bool IsReceived { get; set; }
 
         public string Receiver
         {
@@ -107,47 +111,54 @@ namespace EXPREP_V2
                 var k = m.kaxlApp.KAXL_RG;
                 k = new KAXLApp.KAXLRange(m.kaxlApp, RangeType.WorkSheet);
                 SourceColID sColID = new SourceColID(ws);
-                m.errorTracker.Process = "Reading " + Convert.ToString((SN)sheet);
+                m.errorTracker.Process = "Reading " + Convert.ToString((SN)sheet) + " on Line# " + m.errorTracker.LineNumber;
 
                 for (int r = KAXL.FindFirstRowAfterHeader(ws); r < k.Row.End; r++)
-                {
+                { 
                     string poNumber = (string)k[r, sColID.PurchaseOrder];
-                    double lineNumber = (double)k[r, sColID.LineNumber];
+                    double lineNumber = Convert.ToDouble(k[r, sColID.LineNumber]);
                     string key = poNumber + Convert.ToString(lineNumber);
+
+                    AllDates dates = new AllDates()
+                    {
+                        OriginalScheduledDelivery = ScrubDate(k[r, sColID.OrigSchedDelDate]),
+                        POCreated = ScrubDate(k[r, sColID.CreatedDate]),
+                        RevisedScheduledDeliveryDate = ScrubDate(k[r, sColID.RevisedSchedDelDate]),
+                    };
+
+                    Status status = new Status((string)k[r, sColID.LineStatus], m, poNumber, Convert.ToString(lineNumber), (string)k[r, sColID.ApprovalStatus]);
 
                     if (m.PODictionaryInExpRep.ContainsKey(key))
                     {
-                        CheckAndUpdateReceivedAndRevisedDate();
+                        CheckAndUpdateReceivedAndRevisedDate(m, r, dates,key, status.CleanStatus);
                     }
                     else
                     {
                         Item itemX = m.ItemDict[Convert.ToString(k[r, sColID.ItemNumber])];
                         string procurementCategory = (string)k[r, sColID.ProcurementCategory];
                         Category category = new Category(procurementCategory, itemX, m);
-                        RevisedSchedDeliveryDate revSchedDelTime = new RevisedSchedDeliveryDate(ScrubDate(k[r, sColID.RevisedSchedDelDate]), m, poNumber, lineNumber, r);
+                        Source source = new Source((string)k[r, sColID.AttentionInformation]);
+                        double quantity = Convert.ToDouble(k[r, sColID.Quantity]);
+                        Cash cash = new Cash((string)k[r, sColID.Currency], Convert.ToDouble(k[r, sColID.NetAmount]), dates.POCreated, m, quantity);
+                        Vendor vendor = m.VendorDict[(string)k[r, sColID.VendorAccount]];
+
+                        string wh = (string)k[r, sColID.Warehouse];
 
                         _scrubbedPOLine.Add(new ScrubbedPOLine()
                         {
                             LineNumber = lineNumber,
-                            Cash = new Cash()
-                            {
-                                Currency = (string)k[r, sColID.Currency],
-                                NetAmount = (double)k[r, sColID.NetAmount]
-                            },
-                            ItemX = itemX,
-                            Category = category,
-                            Dates = new Dates()
-                            {
-                                OrigSchedDelDate = ScrubDate(k[r, sColID.OrigSchedDelDate]),
-                                POCreatedDate = ScrubDate(k[r, sColID.CreatedDate]),
-                                RevisedSchedDelDate = revSchedDelTime,
-                            },                            
+                            Cash = cash ?? new Cash(),
+                            ItemX = itemX ?? new Item(),
+                            Category = category ?? new Category(),
+                            Dates = dates ?? new AllDates(),
                             PONum = poNumber,
-                            Quantity = (double)k[r, sColID.Quantity],
-                            Source = new Source((string)k[r, m.SColID.AttentionInformation]),
-                            Status = new Status((string)k[r, sColID.LineStatus], m, poNumber, Convert.ToString(lineNumber), (string)k[r, sColID.ApprovalStatus]),
-                            Vendor = new Vendor() { Code = (string)k[r, sColID.VendorAccount] },
-                        });
+                            Quantity = quantity,
+                            Source = source ?? new Source(),
+                            Status = status ?? new Status(),
+                            Vendor = vendor ?? new Vendor(),
+                            WH = wh != null ? GetWH(wh) : "No WH",
+                    });                        
+
                         var p = _scrubbedPOLine[Last()];
                         if (p.Source.IsMultiLinePO)
                         {
@@ -169,9 +180,9 @@ namespace EXPREP_V2
                 }
             }
         }
-        private int Last() => _scrubbedPOLine.Count;
+        private int Last() => _scrubbedPOLine.Count - 1;
 
-        private DateTime ScrubDate(object dt)
+        public static DateTime ScrubDate(object dt)
         {
             if (dt != null)
                 return Convert.ToDateTime(dt);
@@ -179,21 +190,19 @@ namespace EXPREP_V2
                 return DateTime.MinValue;
         }
 
-        private void CheckAndUpdateReceivedAndRevisedDate()
+        private void CheckAndUpdateReceivedAndRevisedDate(Master m, int row, AllDates dates, string key, string status)
         {
-            PODictionaryInExpRep po = m.PODictionaryInExpRep[PONum + Math.Floor(LineNumber)];
-            DateTime revisedSchedDelDate = Dates.RevisedSchedDelDate.MostRecentShedDeliveryDate;
+            PODictionaryInExpRep po = m.PODictionaryInExpRep[key];
 
-            if (po.MostRecRevDate != revisedSchedDelDate || revisedSchedDelDate == DateTime.MinValue)
+            if (po.MostRecentRevisedDeliveryDate != dates.RevisedScheduledDeliveryDate && dates.RevisedScheduledDeliveryDate != DateTime.MinValue)
             {
-                m.RevisedSchedDelDatesToUpdate.AddToUpdateList(po.ExpRepXLLineNum, po.MostRecRevDate);
+                m.Dates.AddDateToExpRepUpdateList(row, dates.RevisedScheduledDeliveryDate);
             }
-            if (!po.IsReceivedDatePresent && Status.CleanStatus == "Received")
+            if (!po.IsReceivedDatePresent && status == "Received")
             {
-                m.ReceivedDateList.AddToUpdateList(po.ExpRepXLLineNum);
+                m.Dates.AddDateToExpRepUpdateList(row, DateTime.MinValue, true);
             }
         }
-
         public int ListQ => _scrubbedPOLine.Count;
     }
 }

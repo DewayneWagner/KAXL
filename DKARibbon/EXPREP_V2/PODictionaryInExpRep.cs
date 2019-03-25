@@ -26,7 +26,7 @@ namespace EXPREP_V2
         public double POLineNum { get; set; }
         public Status Status { get; set; }
         public int ExpRepXLLineNum { get; set; }
-        public DateTime MostRecRevDate { get; set; }
+        public DateTime MostRecentRevisedDeliveryDate { get; set; }
         public bool IsReceivedDatePresent { get; set; }
 
         private void LoadDictionaryWithPOs()
@@ -48,6 +48,8 @@ namespace EXPREP_V2
                 lineNum = Math.Round((double)k[r, m.ExpRepColumn.LineNumber]);
                 key = poNum + Convert.ToString(lineNum);
                 DateTime mostRecentRevisedDeliveryDate;
+                DateTime receivedDate = ScrubbedPOLine.ScrubDate(k[r, m.ExpRepColumn.RecDate]);
+                IsReceivedDatePresent = receivedDate == DateTime.MinValue ? false : true;
 
                 if (_poDictionaryInExpRep.ContainsKey(key))
                 {
@@ -67,7 +69,7 @@ namespace EXPREP_V2
                     {
                         ExpRepXLLineNum = r,
                         IsReceivedDatePresent = (k[r,m.ExpRepColumn.RecDate] is null) ? false : true,
-                        MostRecRevDate = mostRecentRevisedDeliveryDate,
+                        MostRecentRevisedDeliveryDate = mostRecentRevisedDeliveryDate,
                         POLineNum = lineNum,
                         PONum = poNum,
                         Status = new Status()

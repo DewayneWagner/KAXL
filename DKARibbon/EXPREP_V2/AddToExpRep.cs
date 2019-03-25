@@ -27,7 +27,8 @@ namespace EXPREP_V2
 
             int length = M.POLinesList.ListQ;
 
-            ExpRepColumn dCol = new ExpRepColumn(ws);
+            var dCol = M.ExpRepColumn;
+            //ExpRepColumn dCol = new ExpRepColumn(ws);
             int nextRow = KAXL.LastRow(ws,1) + 1;
             
             // load list with column headings
@@ -50,8 +51,8 @@ namespace EXPREP_V2
                     ws.Cells[nextRow, dCol.Curr].Value2 = po.Cash.Currency;
                     ws.Cells[nextRow, dCol.UnitPriceCAD].Value2 = po.Cash.UnitPriceCAD;
                     ws.Cells[nextRow, dCol.UnitPriceUSD].Value2 = po.Cash.UnitPriceUSD;
-                    ws.Cells[nextRow, dCol.Curr].Value2 = po.Cash.Currency;
                     ws.Cells[nextRow, dCol.NetAmount].Value2 = po.Cash.NetAmount;
+                    ws.Cells[nextRow, dCol.USD].Value2 = po.Cash.USD;
 
                     // No Class
                     ws.Cells[nextRow, dCol.Entity].Value2 = po.Entity;
@@ -74,13 +75,19 @@ namespace EXPREP_V2
 
                     // Date Class                
                     ws.Cells[nextRow, dCol.Month].Value2 = po.Dates.Month;
-                    ws.Cells[nextRow, dCol.OriginalSchedDelDate].Value2 = po.Dates.OrigSchedDelDate;
-                    ws.Cells[nextRow, dCol.POCreatedDate].Value2 = po.Dates.POCreatedDate;
+                    ws.Cells[nextRow, dCol.OriginalSchedDelDate].Value2 = po.Dates.OriginalScheduledDelivery;
+                    ws.Cells[nextRow, dCol.POCreatedDate].Value2 = po.Dates.POCreated;
                     ws.Cells[nextRow, dCol.Quarter].Value2 = po.Dates.Quarter;
                     ws.Cells[nextRow, dCol.Year].Value2 = po.Dates.Year;
                     ws.Cells[nextRow, dCol.DateAdded].Value2 = DateTime.Today;
 
-                    ws.Cells[nextRow, dCol.RevisedSchedDelDate].Value2 = po.Dates.RevisedSchedDelDate.MostRecentShedDeliveryDate;
+                    DateTime dt = po.Dates.RevisedScheduledDeliveryDate;
+
+                    if (dt != DateTime.MinValue)
+                    {
+                        ws.Cells[nextRow, dCol.RevisedSchedDelDate].Value2 = dt;
+                    }
+                    
                     ws.Cells[nextRow, dCol.WH].Value2 = po.WH;
 
                     // Category Class
@@ -94,15 +101,12 @@ namespace EXPREP_V2
                     M.updateMetrics.QTotalUpdatedLines++;
                 }
             }
-            if (M.ReceivedDateList.IsReceivedDateItemsToUpdate)
+
+            if (M.Dates.IsDatesToUpdateInExpediteReport)
             {
-                M.updateMetrics.QUpdatedReceivedDates = M.ReceivedDateList.Q;
-                M.ReceivedDateList.UpdateReceivedDatesOnExpRep();
-            }            
-            if (M.RevisedSchedDelDatesToUpdate.IsRevisedSchedDelDatestoUpdate)
-            {
-                M.updateMetrics.QUpdatedRevisedDeliveryDates = M.RevisedSchedDelDatesToUpdate.Q;
-                M.RevisedSchedDelDatesToUpdate.UpdateRevisedDateOnExpRep();
+                M.updateMetrics.QUpdatedReceivedDates = M.Dates.QReceivedDatesToUpdate;
+                M.updateMetrics.QUpdatedRevisedDeliveryDates = M.Dates.QRevisedScheduledDeliveryDatesToUpdate;
+                M.Dates.UpdateDatesOnExpediteReport();
             }
 
             WS expRep = M.kaxlApp.WB.Sheets[(int)Master.SheetNamesE.MasterData];

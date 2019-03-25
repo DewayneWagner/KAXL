@@ -51,7 +51,7 @@ namespace EXPREP_V2
 
         // Item Class        
         public int ItemNumber => colIDL.GetColNum("ItemNumber");
-        public int ItemDescription => colIDL.GetColNum("ItemDescription");
+        public int ItemDescription => colIDL.GetColNum("ItemDescription"); 
 
         // Vendor Class
         public int VendorAccount => colIDL.GetColNum("VendorAccount");
@@ -69,7 +69,7 @@ namespace EXPREP_V2
         public int Year => colIDL.GetColNum("Year");
         public int Month => colIDL.GetColNum("Month");
         public int Quarter => colIDL.GetColNum("Quarter");
-        public int RecDate => colIDL.GetColNum("Actual Received Date"); // used for updating receipt date...
+        public int RecDate => colIDL.GetColNum("Actual Received Date"); 
         public int OriginalSchedDelDate => colIDL.GetColNum("OriginalScheduledDeliveryDate");
         public int RevisedSchedDelDate => colIDL.GetColNum("Current Delivery Date");
         public int POCreatedDate => colIDL.GetColNum("POCreatedDate");

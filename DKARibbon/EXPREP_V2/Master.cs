@@ -25,30 +25,16 @@ namespace EXPREP_V2
             stopWatch.StartTime = DateTime.Now;
 
             updateMetrics = new UpdateMetrics();
-            errorTracker = new ErrorTracker();
+            errorTracker = new ErrorTracker(this);
 
             kaxlApp = kaxlapp;
 
-            // get the column numbers from expedite report
             ExpRepColumn = new ExpRepColumn(kaxlApp.WB.Sheets[(int)SheetNamesE.ExpRep]);
-
-            // initialize classes to give access to master
-            //Cash c = new Cash(this);
-            //Category cat = new Category(this);
-
-            // Properties to initialize
-            Dates = new Dates(this);
-
-            // load dictionaries
-            ReceivedDateList = new ReceivedDateList(this);
-            RevisedSchedDelDatesToUpdate = new RevisedSchedDelDatesToUpdate(this);
-
+            Dates = new AllDates(this);            
             VendorDict = new Vendor(this); // to initialize new vendordict
             ItemDict = new Item(this); // to initialize new itemdict
             ExRateDict = new ExRate(this);
-
-            PODictionaryInExpRep = new PODictionaryInExpRep(this);
-            
+            PODictionaryInExpRep = new PODictionaryInExpRep(this);            
             CategoryReferenceDictionary = new CategoryReferenceDictionary(this);
                         
             // start reading lines of data from the rawData (cycles between tabs)
@@ -66,15 +52,11 @@ namespace EXPREP_V2
         public ScrubbedPOLine POLinesList { get; set; }
         public PODictionaryInExpRep PODictionaryInExpRep { get; set; }        
         public CategoryReferenceDictionary CategoryReferenceDictionary {get; set;}
-        public ReceivedDateList ReceivedDateList { get; set; }
-        public RevisedSchedDelDatesToUpdate RevisedSchedDelDatesToUpdate { get; set; }
+        public AllDates Dates { get; set; }
         public StopWatch stopWatch { get; set; }
         public UpdateMetrics updateMetrics { get; set; }
         public ErrorTracker errorTracker { get; set; }
 
-        // to give access to revised & received dates to update
-        public Dates Dates { get; set; }
-        
         public class StopWatch
         {
             public StopWatch() { }
@@ -93,11 +75,31 @@ namespace EXPREP_V2
         }
         public class ErrorTracker
         {
+            Master m;
+            private readonly List<string> _errorList;
+
+            public ErrorTracker(Master master)
+            {
+                m = master;
+                _errorList = new List<string>();
+            }
+
             public string Process { get; set; }
             public string LineNumber { get; set; }
 
             public string GetErrorMessage() => "Error Occurred during " + Process + " process, " + "\n" +
                 "on line number " + LineNumber;
+
+            public void AddToErrorList(string error) => _errorList.Add(error);
+
+            public string this[int i]
+            {
+                get => _errorList[i];
+                set => _errorList[i] = value;
+            }
+            public int QErrors => _errorList.Count;
+            public void AddErrorToList(string error) => _errorList.Add(error);
+            public List<string> GetListOfErrors() => _errorList;
         }
     }    
 }
