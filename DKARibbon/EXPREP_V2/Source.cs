@@ -56,8 +56,8 @@ namespace EXPREP_V2
                         {
                             _multiLineSourceList.Add(new Source()
                             {
-                                Requester = isMultipleRequesters ? _requesterDataSplit[i] : _datasplit[(int)DataSplitSection.Requester],
-                                CreatedBy = _datasplit[(int)DataSplitSection.Creator],
+                                Requester = isMultipleRequesters ? _requesterDataSplit[i] : _datasplit[(int)DataSplitSection.Requester].ToUpper(),
+                                CreatedBy = _datasplit[(int)DataSplitSection.Creator].ToUpper(),
                                 Type = GetSourceType(),
                                 Code = Type == SourceType.ProdOrder ? ScrubCode(_sourceDataSplit[i]) : _sourceDataSplit[i],
                             });
@@ -78,8 +78,8 @@ namespace EXPREP_V2
                     try
                     {
                         IsMultiLinePO = false;
-                        CreatedBy = _datasplit[(int)DataSplitSection.Creator];
-                        Requester = _datasplit[(int)DataSplitSection.Requester];
+                        CreatedBy = _datasplit[(int)DataSplitSection.Creator].ToUpper();
+                        Requester = _datasplit[(int)DataSplitSection.Requester].ToUpper();
                         Type = GetSourceType();
                         Code = Type == SourceType.ProdOrder ? ScrubCode(_datasplit[(int)DataSplitSection.Source]) : _datasplit[(int)DataSplitSection.Source];
                     }

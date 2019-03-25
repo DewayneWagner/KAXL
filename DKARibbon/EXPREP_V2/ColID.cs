@@ -89,5 +89,7 @@ namespace EXPREP_V2
 
         // Category Class
         public int Category => colIDL.GetColNum("Clean Category");
+
+        public int totalColumnsInExpRep => colIDL.ColQ;
     }
 }

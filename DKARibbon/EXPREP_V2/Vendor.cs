@@ -10,7 +10,7 @@ namespace EXPREP_V2
         Master m;
         private readonly Dictionary<string, Vendor> _vendorDictionary;
         private readonly List<string> _vendorNamesNotInDictionary;
-        private enum VendorColumnOrder { Nada, Name, Number }
+        private enum VendorColumnOrder { Nada, Code, Name }
 
         public Vendor() { }
 
@@ -35,22 +35,22 @@ namespace EXPREP_V2
             m.kaxlApp.RG = ws.Range[ws.Cells[KAXL.FindFirstRowAfterHeader(ws), (int)MDC.VendorName],
                 ws.Cells[KAXL.LastRow(ws, (int)MDC.VendorName), (int)MDC.VendorAccount]];
             k = new KAXLApp.KAXLRange(m.kaxlApp, RangeType.CodedRangeSetKAXLAppRG);
-            string name;
+            string code;
 
             for (int r = 1; r < k.Row.End; r++)
             {
-                name = (string)k[r, (int)VendorColumnOrder.Name];
+                code = (string)k[r, (int)VendorColumnOrder.Code];
 
-                if (_vendorDictionary.ContainsKey(name))
+                if (_vendorDictionary.ContainsKey(code))
                 {
-                    name = null;
+                    code = null;
                 }
                 else
                 {
-                    _vendorDictionary.Add(name, new Vendor()
+                    _vendorDictionary.Add(code, new Vendor()
                     {
-                        Name = name,
-                        Code = (string)k[r, (int)VendorColumnOrder.Number],
+                        Name = (string)k[r,(int)VendorColumnOrder.Name],
+                        Code = code,
                     });
                 }                
             }

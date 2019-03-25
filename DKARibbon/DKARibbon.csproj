@@ -162,7 +162,6 @@
     <Compile Include="DKARibbon.cs" />
     <Compile Include="DKAWrite.cs" />
     <Compile Include="EXPREP_V2\AllDates.cs" />
-    <Compile Include="EXPREP_V2\Junk\Dates.cs" />
     <Compile Include="EXPREP_V2\PODictionaryInExpRep.cs" />
     <Compile Include="EXPREP_V2\Cash.cs" />
     <Compile Include="EXPREP_V2\Category.cs" />
@@ -175,13 +174,11 @@
     <Compile Include="EXPREP_V2\ExRate.cs" />
     <Compile Include="EXPREP_V2\Item.cs" />
     <Compile Include="EXPREP_V2\Master.cs" />
-    <Compile Include="EXPREP_V2\Junk\POLine.cs" />
-    <Compile Include="EXPREP_V2\Junk\ReceivedDate.cs" />
-    <Compile Include="EXPREP_V2\Junk\RevisedSchedDeliveryDate.cs" />
     <Compile Include="EXPREP_V2\ScrubbedPOLine.cs" />
     <Compile Include="EXPREP_V2\Source.cs" />
     <Compile Include="EXPREP_V2\Status.cs" />
     <Compile Include="EXPREP_V2\Vendor.cs" />
+    <Compile Include="EXPREP_V2\WriteToExpRep.cs" />
     <Compile Include="frmCurrencyConvert.cs">
       <SubType>Form</SubType>
     </Compile>

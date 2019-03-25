@@ -29,6 +29,8 @@ namespace EXPREP_V2
             set => _scrubbedPOLine[i] = value;
         }
 
+        public List<ScrubbedPOLine> GetList() => _scrubbedPOLine;
+
         public string PONum { get; set; }
         public double LineNumber { get; set; }
         public double Quantity { get; set; }
@@ -43,7 +45,7 @@ namespace EXPREP_V2
         public string GetWH(string wh) => wh.Length >= 3 && wh != null ? wh.Substring(0, 3) : null;
             
         public Status Status { get; set; }
-        public String Direct => ItemX.Num == null ? "Indirect" : "Direct";
+        public String Direct { get; set; }
         public string Entity => PONum.Substring(0, 4);
         public bool ICO => Vendor != null && (Vendor.Code.Length == 4) ? true : false;
         public bool IsLineInExpRep => (m.PODictionaryInExpRep.IsDuplicate(PONum, Math.Floor(LineNumber))) ? true : false;
@@ -140,9 +142,9 @@ namespace EXPREP_V2
                         Source source = new Source((string)k[r, sColID.AttentionInformation]);
                         double quantity = Convert.ToDouble(k[r, sColID.Quantity]);
                         Cash cash = new Cash((string)k[r, sColID.Currency], Convert.ToDouble(k[r, sColID.NetAmount]), dates.POCreated, m, quantity);
-                        Vendor vendor = m.VendorDict[(string)k[r, sColID.VendorAccount]];
-
+                        Vendor vendor = m.VendorDict[(string)k[r, sColID.VendorAccount]];                        
                         string wh = (string)k[r, sColID.Warehouse];
+                        string direct = itemX.Num == null ? "Indirect" : "Direct";
 
                         _scrubbedPOLine.Add(new ScrubbedPOLine()
                         {
@@ -157,7 +159,8 @@ namespace EXPREP_V2
                             Status = status ?? new Status(),
                             Vendor = vendor ?? new Vendor(),
                             WH = wh != null ? GetWH(wh) : "No WH",
-                    });                        
+                            Direct = direct,
+                        });
 
                         var p = _scrubbedPOLine[Last()];
                         if (p.Source.IsMultiLinePO)

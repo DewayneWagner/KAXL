@@ -39,7 +39,9 @@ namespace EXPREP_V2
                         
             // start reading lines of data from the rawData (cycles between tabs)
             POLinesList = new ScrubbedPOLine(this);
-            AddToExpRep a = new AddToExpRep(this);
+            //AddToExpRep a = new AddToExpRep(this);
+
+            WriteToExpRep = new WriteToExpRep(this, POLinesList.GetList());
         }
 
         public Category Category { get; set; }
@@ -56,6 +58,7 @@ namespace EXPREP_V2
         public StopWatch stopWatch { get; set; }
         public UpdateMetrics updateMetrics { get; set; }
         public ErrorTracker errorTracker { get; set; }
+        public WriteToExpRep WriteToExpRep { get; set; }
 
         public class StopWatch
         {
