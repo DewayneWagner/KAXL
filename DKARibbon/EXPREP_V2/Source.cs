@@ -130,12 +130,15 @@ namespace EXPREP_V2
         {
             char[] c = code.ToCharArray();
             code = null;
+            char cc;
 
             for (int i = 4; i >= 1; i--)
             {
-                code += c[c.Length - i];
+                cc = c[c.Length - i];
+                if (cc != '-')
+                    code += cc;
             }
-
+            
             return "PRO" + code;
         }
         private SourceType GetSourceType()

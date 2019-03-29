@@ -25,7 +25,6 @@ namespace EXPREP_V2
             stopWatch.StartTime = DateTime.Now;
 
             updateMetrics = new UpdateMetrics();
-            errorTracker = new ErrorTracker(this);
 
             kaxlApp = kaxlapp;
 
@@ -39,9 +38,9 @@ namespace EXPREP_V2
                         
             // start reading lines of data from the rawData (cycles between tabs)
             POLinesList = new ScrubbedPOLine(this);
-            //AddToExpRep a = new AddToExpRep(this);
+            AddToExpRep a = new AddToExpRep(this);
 
-            WriteToExpRep = new WriteToExpRep(this, POLinesList.GetList());
+            //WriteToExpRep = new WriteToExpRep(this, POLinesList.GetList());
         }
 
         public Category Category { get; set; }
@@ -57,7 +56,6 @@ namespace EXPREP_V2
         public AllDates Dates { get; set; }
         public StopWatch stopWatch { get; set; }
         public UpdateMetrics updateMetrics { get; set; }
-        public ErrorTracker errorTracker { get; set; }
         public WriteToExpRep WriteToExpRep { get; set; }
 
         public class StopWatch
@@ -75,34 +73,6 @@ namespace EXPREP_V2
             public int QTotalUpdatedLines { get; set; }
             public int QUpdatedReceivedDates { get; set; }
             public int QUpdatedRevisedDeliveryDates { get; set; }
-        }
-        public class ErrorTracker
-        {
-            Master m;
-            private readonly List<string> _errorList;
-
-            public ErrorTracker(Master master)
-            {
-                m = master;
-                _errorList = new List<string>();
-            }
-
-            public string Process { get; set; }
-            public string LineNumber { get; set; }
-
-            public string GetErrorMessage() => "Error Occurred during " + Process + " process, " + "\n" +
-                "on line number " + LineNumber;
-
-            public void AddToErrorList(string error) => _errorList.Add(error);
-
-            public string this[int i]
-            {
-                get => _errorList[i];
-                set => _errorList[i] = value;
-            }
-            public int QErrors => _errorList.Count;
-            public void AddErrorToList(string error) => _errorList.Add(error);
-            public List<string> GetListOfErrors() => _errorList;
-        }
+        }        
     }    
 }

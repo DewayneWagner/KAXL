@@ -94,9 +94,11 @@ namespace EXPREP_V2
             //Microsoft.Office.Tools.Excel.NamedRange nr = ws.Range[ws.Cells[KAXL.FindFirstRowAfterHeader(ws), 1], ws.Cells[KAXL.LastRow(ws, 1) + 1, colQ]];
             //nr.set_Value(Microsoft.Office.Interop.Excel.XlRangeValueDataType.xlRangeValueDefault, _scrubbedPOLinesObjArray);
 
-            Microsoft.Office.Tools.Excel.NamedRange nr = ws.Range[ws.Cells[KAXL.FindFirstRowAfterHeader(ws), 1], ws.Cells[KAXL.LastRow(ws, 1) + 1, colQ]];            
+            rg.Value = _scrubbedPOLinesObjArray;
 
-            Marshal.ReleaseComObject(nr);
+            //Microsoft.Office.Tools.Excel.NamedRange nr = ws.Range[ws.Cells[KAXL.FindFirstRowAfterHeader(ws), 1], ws.Cells[KAXL.LastRow(ws, 1) + 1, colQ]];            
+
+            //Marshal.ReleaseComObject(nr);
         }
     }
 }

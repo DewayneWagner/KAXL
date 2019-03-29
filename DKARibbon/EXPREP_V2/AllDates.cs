@@ -77,7 +77,8 @@ namespace EXPREP_V2
             WS ws = m.kaxlApp.WS;
             var k = m.kaxlApp.KAXL_RG;
             k = new KAXLApp.KAXLRange(m.kaxlApp, RangeType.WorkSheet);
-            m.errorTracker.Process = "Updating Dates In Expedite Report";
+
+            m.kaxlApp.ErrorTracker.ProgramStage = "Updating Dates In Expedite Report";
 
             for (int i = 0; i < QDatesToUpdate(); i++)
             {

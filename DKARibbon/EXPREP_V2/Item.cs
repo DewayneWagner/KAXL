@@ -97,5 +97,6 @@ namespace EXPREP_V2
         }
 
         public bool IsItemsThatArentInDict() => _itemNumbersThatArentInDictL.Count > 0 ? true : false;
+        public bool IsItemInDictionary(string item) => _itemDictionary.ContainsKey(item);
     }
 }

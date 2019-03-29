@@ -28,11 +28,12 @@ namespace EXPREP_V2
 
         private void btnUpdateExpRep_Click(object sender, EventArgs e)
         {
-            M = new Master(k, this);
+            
             try
             {
                 txtDone.Text = "Working...";
-                
+
+                M = new Master(k, this);
 
                 txtDone.Text = "DONE!!!";
                 txtQDeliveryDatesUpdated.Text = Convert.ToString(M.updateMetrics.QUpdatedRevisedDeliveryDates);
@@ -42,7 +43,7 @@ namespace EXPREP_V2
             }
             catch
             {
-                txtDone.Text = "F'd Up..." + "\n" + M.errorTracker.GetErrorMessage();
+                txtDone.Text = "F'd Up..." + "\n" + k.ErrorTracker.ProgramStage + "\n" + "Row: " + Convert.ToString(k.ErrorTracker.Row);
             }
         }
 

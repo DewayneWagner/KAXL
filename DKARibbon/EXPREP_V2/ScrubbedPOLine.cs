@@ -113,86 +113,87 @@ namespace EXPREP_V2
                 var k = m.kaxlApp.KAXL_RG;
                 k = new KAXLApp.KAXLRange(m.kaxlApp, RangeType.WorkSheet);
                 SourceColID sColID = new SourceColID(ws);
-                m.errorTracker.Process = "Reading " + Convert.ToString((SN)sheet) + " on Line# " + m.errorTracker.LineNumber;
+                m.kaxlApp.ErrorTracker.ProgramStage = "Reading " + Convert.ToString((SN)sheet);
 
                 for (int r = KAXL.FindFirstRowAfterHeader(ws); r < k.Row.End; r++)
-                { 
-                    string poNumber = (string)k[r, sColID.PurchaseOrder];
-                    double lineNumber = Convert.ToDouble(k[r, sColID.LineNumber]);
-                    string key = poNumber + Convert.ToString(lineNumber);
+                {
+                    m.kaxlApp.ErrorTracker.Row = r;
 
-                    AllDates dates = new AllDates()
+                    try
                     {
-                        OriginalScheduledDelivery = ScrubDate(k[r, sColID.OrigSchedDelDate]),
-                        POCreated = ScrubDate(k[r, sColID.CreatedDate]),
-                        RevisedScheduledDeliveryDate = ScrubDate(k[r, sColID.RevisedSchedDelDate]),
-                    };
+                        string poNumber = (string)k[r, sColID.PurchaseOrder];
+                        double lineNumber = Convert.ToDouble(k[r, sColID.LineNumber]);
+                        string key = poNumber + Convert.ToString(lineNumber);
 
-                    Status status = new Status((string)k[r, sColID.LineStatus], m, poNumber, Convert.ToString(lineNumber), (string)k[r, sColID.ApprovalStatus]);
-
-                    if (m.PODictionaryInExpRep.ContainsKey(key))
-                    {
-                        CheckAndUpdateReceivedAndRevisedDate(m, r, dates,key, status.CleanStatus);
-                    }
-                    else
-                    {
-                        Item itemX = m.ItemDict[Convert.ToString(k[r, sColID.ItemNumber])];
-                        string procurementCategory = (string)k[r, sColID.ProcurementCategory];
-                        Category category = new Category(procurementCategory, itemX, m);
-                        Source source = new Source((string)k[r, sColID.AttentionInformation]);
-                        double quantity = Convert.ToDouble(k[r, sColID.Quantity]);
-                        Cash cash = new Cash((string)k[r, sColID.Currency], Convert.ToDouble(k[r, sColID.NetAmount]), dates.POCreated, m, quantity);
-                        Vendor vendor = m.VendorDict[(string)k[r, sColID.VendorAccount]];                        
-                        string wh = (string)k[r, sColID.Warehouse];
-                        string direct = itemX.Num == null ? "Indirect" : "Direct";
-
-                        _scrubbedPOLine.Add(new ScrubbedPOLine()
+                        AllDates dates = new AllDates()
                         {
-                            LineNumber = lineNumber,
-                            Cash = cash ?? new Cash(),
-                            ItemX = itemX ?? new Item(),
-                            Category = category ?? new Category(),
-                            Dates = dates ?? new AllDates(),
-                            PONum = poNumber,
-                            Quantity = quantity,
-                            Source = source ?? new Source(),
-                            Status = status ?? new Status(),
-                            Vendor = vendor ?? new Vendor(),
-                            WH = wh != null ? GetWH(wh) : "No WH",
-                            Direct = direct,
-                        });
+                            OriginalScheduledDelivery = KAXL.ReadDateTime(k[r, sColID.OrigSchedDelDate]),
+                            POCreated = KAXL.ReadDateTime(k[r, sColID.CreatedDate]),
+                            RevisedScheduledDeliveryDate = KAXL.ReadDateTime(k[r, sColID.RevisedSchedDelDate]),
+                        };
 
-                        var p = _scrubbedPOLine[Last()];
-                        if (p.Source.IsMultiLinePO)
+                        Status status = new Status((string)k[r, sColID.LineStatus], m, poNumber, Convert.ToString(lineNumber), (string)k[r, sColID.ApprovalStatus]);
+
+                        if (m.PODictionaryInExpRep.ContainsKey(key))
                         {
-                            p.LineNumber = lineNumber + 0.1;
-                            int q = p.Source.QSourcesInList;
+                            CheckAndUpdateReceivedAndRevisedDate(m, r, dates, key, status.CleanStatus);
+                        }
+                        else
+                        {
+                            Item itemX = m.ItemDict[Convert.ToString(k[r, sColID.ItemNumber])];
+                            string procurementCategory = (string)k[r, sColID.ProcurementCategory];
+                            Category category = new Category(procurementCategory, itemX, m);
+                            Source source = new Source((string)k[r, sColID.AttentionInformation]);
+                            double quantity = Convert.ToDouble(k[r, sColID.Quantity]);
+                            Cash cash = new Cash((string)k[r, sColID.Currency], Convert.ToDouble(k[r, sColID.NetAmount]), dates.POCreated, m, quantity);
+                            Vendor vendor = m.VendorDict[(string)k[r, sColID.VendorAccount]];
+                            string wh = (string)k[r, sColID.Warehouse];
+                            string direct = m.ItemDict.IsItemInDictionary(ItemX.Num) ? "Direct" : "Indirect";
 
-                            for (int i = 1; i < q; i++)
+                            _scrubbedPOLine.Add(new ScrubbedPOLine()
                             {
-                                p.LineNumber += 0.1;
-                                p.Quantity = 0;
-                                p.Cash.NetAmount = 0;
-                                p.Cash = Cash.ZeroedOutCash();
-                                p.Source = p.Source[i];
+                                LineNumber = lineNumber,
+                                Cash = cash ?? new Cash(),
+                                ItemX = itemX ?? new Item(),
+                                Category = category ?? new Category(),
+                                Dates = dates ?? new AllDates(),
+                                PONum = poNumber,
+                                Quantity = quantity,
+                                Source = source ?? new Source(),
+                                Status = status ?? new Status(),
+                                Vendor = vendor ?? new Vendor(),
+                                WH = wh != null ? GetWH(wh) : "No WH",
+                                Direct = direct,
+                            });
 
-                                _scrubbedPOLine.Add(p);
+                            var p = _scrubbedPOLine[Last()];
+                            if (p.Source.IsMultiLinePO)
+                            {
+                                p.LineNumber = lineNumber + 0.1;
+                                int q = p.Source.QSourcesInList;
+
+                                for (int i = 1; i < q; i++)
+                                {
+                                    p.LineNumber += 0.1;
+                                    p.Quantity = 0;
+                                    p.Cash.NetAmount = 0;
+                                    p.Cash = Cash.ZeroedOutCash();
+                                    p.Source = p.Source[i];
+
+                                    _scrubbedPOLine.Add(p);
+                                }
                             }
                         }
                     }
+                    catch
+                    {
+                        m.kaxlApp.ErrorTracker.AddNewError(Convert.ToString((SN)sheet) + ", Row" + Convert.ToString(r));
+                    }                    
                 }
             }
         }
         private int Last() => _scrubbedPOLine.Count - 1;
-
-        public static DateTime ScrubDate(object dt)
-        {
-            if (dt != null)
-                return Convert.ToDateTime(dt);
-            else
-                return DateTime.MinValue;
-        }
-
+        
         private void CheckAndUpdateReceivedAndRevisedDate(Master m, int row, AllDates dates, string key, string status)
         {
             PODictionaryInExpRep po = m.PODictionaryInExpRep[key];
