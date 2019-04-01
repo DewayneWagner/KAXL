@@ -577,8 +577,8 @@ namespace DKAExcelStuff
                     Col.End = Col.Start + Col.Q;
                         
                     RG = kaxlApp.RG;
-                }                
-
+                }   
+                
                 _valueArray = (object[,])RG.get_Value(XlRangeValueDataType.xlRangeValueDefault);
             }
 
