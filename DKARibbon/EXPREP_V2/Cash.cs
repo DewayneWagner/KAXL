@@ -22,10 +22,12 @@ namespace EXPREP_V2
             int year = createdDate.Year;
             int month = createdDate.Month;
             NetAmount = netAmount;
-            CAD = (M.ExRateDict[cur, "CAD", year, month] * netAmount) / quantity;
-            USD = (M.ExRateDict[cur, "USD", year, month] * netAmount) / quantity;
-            UnitPriceCAD = CAD * quantity;
-            UnitPriceUSD = USD * quantity;
+            
+            UnitPriceCAD = (M.ExRateDict[cur, "CAD", year, month] * netAmount) / quantity; 
+            UnitPriceUSD = (M.ExRateDict[cur, "USD", year, month] * netAmount) / quantity;
+
+            CAD = UnitPriceCAD * quantity;
+            USD = UnitPriceUSD * quantity;
         }
 
         public double CAD { get; set; }

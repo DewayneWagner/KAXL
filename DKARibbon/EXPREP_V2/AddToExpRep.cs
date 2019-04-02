@@ -30,10 +30,14 @@ namespace EXPREP_V2
             var dCol = M.ExpRepColumn;
             //ExpRepColumn dCol = new ExpRepColumn(ws);
             int nextRow = KAXL.LastRow(ws,1) + 1;
+
+            M.kaxlApp.ErrorTracker.ProgramStage = "Writing to Expedite Report";
             
             // load list with column headings
             for (int i = 1; i < length; i++)
-            {                
+            {
+                M.kaxlApp.ErrorTracker.Row = i;
+
                 ScrubbedPOLine po = M.POLinesList[i];
 
                 if(po.Status.CleanStatus != "Canceled")
@@ -88,11 +92,6 @@ namespace EXPREP_V2
                         ws.Cells[nextRow, dCol.RevisedSchedDelDate].Value2 = dt;
                     }
                     
-                    ws.Cells[nextRow, dCol.WH].Value2 = po.WH;
-
-                    // Category Class
-                    ws.Cells[nextRow, dCol.Category].Value2 = po.Category.CleanCategory;
-
                     // Vendor Class
                     ws.Cells[nextRow, dCol.VendorAccount].Value2 = po.Vendor.Code;
                     ws.Cells[nextRow, dCol.VendorName].Value2 = po.Vendor.Name;
@@ -104,6 +103,8 @@ namespace EXPREP_V2
 
             if (M.Dates.IsDatesToUpdateInExpediteReport)
             {
+                M.kaxlApp.ErrorTracker.ProgramStage = "Updating Dates in Expedite Report";
+
                 M.updateMetrics.QUpdatedReceivedDates = M.Dates.QReceivedDatesToUpdate;
                 M.updateMetrics.QUpdatedRevisedDeliveryDates = M.Dates.QRevisedScheduledDeliveryDatesToUpdate;
                 M.Dates.UpdateDatesOnExpediteReport();
@@ -113,7 +114,9 @@ namespace EXPREP_V2
 
             //Update vendor list with vendor numbers that aren't in dictionary
             if (M.VendorDict.IsVendorNumbersThatArentInDict())
-            {                
+            {
+                M.kaxlApp.ErrorTracker.ProgramStage = "Updating vendor names in vendor list";
+
                 int col = (int)Master.MasterDataColumnsE.VendorAccount;
                 int NR = KAXL.LastRow(expRep, col) + 1;
 
@@ -127,7 +130,9 @@ namespace EXPREP_V2
             }
             // Update Item List with item numbers not in dictionary
             if (M.ItemDict.IsItemsThatArentInDict())
-            {                
+            {
+                M.kaxlApp.ErrorTracker.ProgramStage = "Updating Item's that aren't in dictionary";
+
                 int col = (int)Master.MasterDataColumnsE.ItemNum;
                 int NR = KAXL.LastRow(expRep, col) + 1;
 

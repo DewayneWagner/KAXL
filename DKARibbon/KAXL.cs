@@ -257,37 +257,71 @@ namespace DKAExcelStuff
         }
         public static DateTime ReadDateTime(object oDate)
         {
-            try
+            DateTime dt;
+            if(oDate != null && oDate is DateTime)
             {
-                double d;
-                DateTime dt;
-
-                if (oDate == null)
-                {
-                    dt = DateTime.MinValue;
-                }
-                else if (oDate is string)
-                {
-                    dt = Convert.ToDateTime(oDate);
-                    dt = DateTime.FromOADate(Math.Floor(dt.ToOADate()));
-                }
-                else if (oDate is DateTime)
-                {
-                    d = Math.Round(Convert.ToDouble(oDate), 0);
-                    dt = DateTime.FromOADate(d);
-                }
-                else
-                {
-                    dt = DateTime.MinValue;
-                }
-                dt.ToShortDateString();
-                return dt;
+                dt = (DateTime)oDate;
+                return dt.Date;
             }
-            catch
+            else if(oDate is double)
+            {
+                double d = (double)oDate;
+                return DateTime.FromOADate(d);
+            }
+            else
             {
                 return DateTime.MinValue;
             }
+
+            //try
+            //{
+                
+
+            //    //if (oDate == null)
+            //    //{
+            //    //    dt = DateTime.MinValue;
+            //    //}
+            //    //else if (oDate is string)
+            //    //{
+            //    //    d = (double)oDate;
+            //    //    d = Math.Round(d);
+
+            //    //    dt = DateTime.FromOADate(d);
+            //    //    //dt = Convert.ToDateTime(oDate);
+            //    //    //dt = DateTime.FromOADate(Math.Floor(dt.ToOADate()));
+            //    //}
+            //    //else if (oDate is DateTime)
+            //    //{
+            //    //    dt = dt.oDate(oDate);
+
+            //    //    d = Math.Round(Convert.ToDouble(oDate), 0);
+            //    //    dt = DateTime.FromOADate(d);
+            //    //}
+            //    //else
+            //    //{
+            //    //    dt = DateTime.MinValue;
+            //    //}
+            //    //dt.ToShortDateString();
+            //    //return dt;
+            //}
+            //catch
+            //{
+            //    return DateTime.MinValue;
+            //}
         }        
+        public static DateTime ReadDateTime(int date)
+        {
+            DateTime dt;
+            try
+            {
+                dt = date == 0 ? DateTime.MinValue : Convert.ToDateTime(date);
+            }
+            catch
+            {
+                dt = DateTime.MinValue;
+            }
+            return dt;
+        }
         public static void IfError(KAXLApp kaxlApp)
         {
             kaxlApp.KAXL_RG = new KAXLApp.KAXLRange(kaxlApp, RangeType.Selected);
@@ -522,20 +556,30 @@ namespace DKAExcelStuff
             public KAXLRange(KAXLApp kaxlApp, RangeType rt)
             {                
                 if(rt == RangeType.Selected)
-                {                    
-                    Row = new Row()
-                    {
-                        Start = kaxlApp.RG.Row,
-                        Q = kaxlApp.RG.Rows.Count,
-                        End = Start + Q,
-                    };
+                {
+                    //Row = new Row()
+                    //{
+                    //    Start = kaxlApp.RG.Row,
+                    //    Q = kaxlApp.RG.Rows.Count,
+                    //    End = Start + Q,
+                    //};
 
-                    Col = new Col()
-                    {
-                        Start = kaxlApp.RG.Column,
-                        Q = kaxlApp.RG.Columns.Count,
-                        End = Start + Q,
-                    };
+                    Row = new Row();
+                    Row.Start = kaxlApp.RG.Row;
+                    Row.Q = kaxlApp.RG.Rows.Count;
+                    Row.End = Row.Start + Row.Q;
+
+                    //Col = new Col()
+                    //{
+                    //    Start = kaxlApp.RG.Column,
+                    //    Q = kaxlApp.RG.Columns.Count,
+                    //    End = Start + Q,
+                    //};
+
+                    Col = new Col();
+                    Col.Start = kaxlApp.RG.Column;
+                    Col.Q = kaxlApp.RG.Columns.Count;
+                    Col.End = Col.Start + Col.Q;
 
                     RG = kaxlApp.WS.Range[kaxlApp.WS.Cells[Row.Start, Col.Start], kaxlApp.WS.Cells[Row.End, Col.End]];
                 }

@@ -47,7 +47,7 @@ namespace EXPREP_V2
         public Status Status { get; set; }
         public String Direct { get; set; }
         public string Entity => PONum.Substring(0, 4);
-        public bool ICO => Vendor != null && (Vendor.Code.Length == 4) ? true : false;
+        public bool ICO { get; set; }
         public bool IsLineInExpRep => (m.PODictionaryInExpRep.IsDuplicate(PONum, Math.Floor(LineNumber))) ? true : false;
         public bool IsReceived { get; set; }
 
@@ -115,7 +115,7 @@ namespace EXPREP_V2
                 SourceColID sColID = new SourceColID(ws);
                 m.kaxlApp.ErrorTracker.ProgramStage = "Reading " + Convert.ToString((SN)sheet);
 
-                for (int r = KAXL.FindFirstRowAfterHeader(ws); r < k.Row.End; r++)
+                for (int r = 2; r < k.Row.End; r++)
                 {
                     m.kaxlApp.ErrorTracker.Row = r;
 
@@ -123,7 +123,7 @@ namespace EXPREP_V2
                     {
                         string poNumber = (string)k[r, sColID.PurchaseOrder];
                         double lineNumber = Convert.ToDouble(k[r, sColID.LineNumber]);
-                        string key = poNumber + Convert.ToString(lineNumber);
+                        string key = poNumber + Convert.ToString(Math.Round(lineNumber,0));
 
                         AllDates dates = new AllDates()
                         {
@@ -134,7 +134,8 @@ namespace EXPREP_V2
 
                         Status status = new Status((string)k[r, sColID.LineStatus], m, poNumber, Convert.ToString(lineNumber), (string)k[r, sColID.ApprovalStatus]);
 
-                        if (m.PODictionaryInExpRep.ContainsKey(key))
+                        //if (m.PODictionaryInExpRep.ContainsKey(key))
+                        if(m.PODictionaryInExpRep.IsDuplicate(key))
                         {
                             CheckAndUpdateReceivedAndRevisedDate(m, r, dates, key, status.CleanStatus);
                         }
@@ -148,7 +149,8 @@ namespace EXPREP_V2
                             Cash cash = new Cash((string)k[r, sColID.Currency], Convert.ToDouble(k[r, sColID.NetAmount]), dates.POCreated, m, quantity);
                             Vendor vendor = m.VendorDict[(string)k[r, sColID.VendorAccount]];
                             string wh = (string)k[r, sColID.Warehouse];
-                            string direct = m.ItemDict.IsItemInDictionary(ItemX.Num) ? "Direct" : "Indirect";
+                            string direct = itemX.Desc == null ? "Indirect" : "Direct";
+                            bool ico = vendor.Name != null && (vendor.Code.Length == 4) ? true : false;
 
                             _scrubbedPOLine.Add(new ScrubbedPOLine()
                             {
@@ -164,9 +166,10 @@ namespace EXPREP_V2
                                 Vendor = vendor ?? new Vendor(),
                                 WH = wh != null ? GetWH(wh) : "No WH",
                                 Direct = direct,
+                                ICO = ico,
                             });
 
-                            var p = _scrubbedPOLine[Last()];
+                            var p = _scrubbedPOLine[_scrubbedPOLine.Count - 1];
                             if (p.Source.IsMultiLinePO)
                             {
                                 p.LineNumber = lineNumber + 0.1;
