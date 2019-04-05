@@ -85,7 +85,7 @@ namespace EXPREP_V2
                 AllDates updateDates = _datesToUpdate[i];
                 if (updateDates.Received != null)
                     ws.Cells[updateDates.RowToUpdate, m.ExpRepColumn.RecDate].Value = updateDates.Received;
-                if (updateDates.RevisedScheduledDeliveryDate != null)
+                if (updateDates.RevisedScheduledDeliveryDate != null || updateDates.RevisedScheduledDeliveryDate != DateTime.MinValue)
                     ws.Cells[updateDates.RowToUpdate, m.ExpRepColumn.RevisedSchedDelDate].Value = updateDates.RevisedScheduledDeliveryDate;
             }
         }

@@ -369,6 +369,8 @@ namespace DKAExcelStuff
         }
         public static void TopRowFormulas(KAXLApp kaxlApp)
         {
+            Cursor c = Cursors.WaitCursor;
+
             kaxlApp.KAXL_RG = new KAXLApp.KAXLRange(kaxlApp, RangeType.Selected);
             var mc = kaxlApp.KAXL_RG;
             int LastRow = KAXL.LastRow(kaxlApp.WS, 1);
@@ -386,6 +388,8 @@ namespace DKAExcelStuff
                 var val = rg.Value2;
                 rg.Value2 = val;
             }
+
+            c = Cursors.Default;
         }
         public static void CADtoUSDConverter(KAXLApp kaxlApp, double exRate)
         {

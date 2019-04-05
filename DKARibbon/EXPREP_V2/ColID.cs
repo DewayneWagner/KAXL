@@ -21,13 +21,10 @@ namespace EXPREP_V2
         public int LineStatus => colIDL.GetColNum("Line status");
         public int Currency => colIDL.GetColNum("Currency");
         public int ProcurementCategory => colIDL.GetColNum("Procurement category");
-        public int Site => colIDL.GetColNum("Site");
-        public int Warehouse => colIDL.GetColNum("Warehouse");
-        
+        public int Warehouse => colIDL.GetColNum("Warehouse");        
         public int RevisedSchedDelDate => colIDL.GetColNum("Confirmed delivery date");
         public int CreatedDate => colIDL.GetColNum("Created date and time");
         public int OrigSchedDelDate => colIDL.GetColNum("Delivery date");
-
         public int Quantity => colIDL.GetColNum("Quantity");
         public int UnitPrice => colIDL.GetColNum("Unit price");
         public int NetAmount => colIDL.GetColNum("Net amount");

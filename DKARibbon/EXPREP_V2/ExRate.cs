@@ -24,12 +24,14 @@ namespace EXPREP_V2
 
         private void LoadExRateDictionary()
         {
+            m.kaxlApp.ErrorTracker.ProgramStage = "Loading Exchange Rates";
+
             m.kaxlApp.WS = m.kaxlApp.WB.Sheets[(int)Master.SheetNamesE.MasterData];
 
             WS ws = m.kaxlApp.WS;
             var k = m.kaxlApp.KAXL_RG;
 
-            int FirstRowOfData = KAXL.FindFirstRowAfterHeader(ws);
+            int FirstRowOfData = 2;
             int LR = KAXL.LastRow(ws, (int)MDC.ExRateKey);
             int LC = (int)MDC.ExRate;
 
@@ -39,6 +41,8 @@ namespace EXPREP_V2
 
             for (int r = 1; r < k.Row.End; r++)
             {
+                m.kaxlApp.ErrorTracker.Row = r;
+
                 _exRateDictionary.Add((string)k[r, (int)MDC.ExRateKey], (double)k[r, (int)MDC.ExRate]);
             }
         }

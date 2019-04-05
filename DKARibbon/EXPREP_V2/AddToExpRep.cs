@@ -79,17 +79,15 @@ namespace EXPREP_V2
 
                     // Date Class                
                     ws.Cells[nextRow, dCol.Month].Value2 = po.Dates.Month;
-                    ws.Cells[nextRow, dCol.OriginalSchedDelDate].Value2 = po.Dates.OriginalScheduledDelivery;
-                    ws.Cells[nextRow, dCol.POCreatedDate].Value2 = po.Dates.POCreated;
+                    ws.Cells[nextRow, dCol.OriginalSchedDelDate].Value = po.Dates.OriginalScheduledDelivery;
+                    ws.Cells[nextRow, dCol.POCreatedDate].Value = po.Dates.POCreated;
                     ws.Cells[nextRow, dCol.Quarter].Value2 = po.Dates.Quarter;
                     ws.Cells[nextRow, dCol.Year].Value2 = po.Dates.Year;
-                    ws.Cells[nextRow, dCol.DateAdded].Value2 = DateTime.Today;
-
-                    DateTime dt = po.Dates.RevisedScheduledDeliveryDate;
-
-                    if (dt != DateTime.MinValue)
+                    ws.Cells[nextRow, dCol.DateAdded].Value = DateTime.Today;
+                    
+                    if(po.Dates.RevisedScheduledDeliveryDate != DateTime.MinValue)
                     {
-                        ws.Cells[nextRow, dCol.RevisedSchedDelDate].Value2 = dt;
+                        ws.Cells[nextRow, dCol.RevisedSchedDelDate].Value = po.Dates.RevisedScheduledDeliveryDate;
                     }
                     
                     // Vendor Class

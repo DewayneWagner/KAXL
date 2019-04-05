@@ -114,16 +114,18 @@ namespace EXPREP_V2
                 k = new KAXLApp.KAXLRange(m.kaxlApp, RangeType.WorkSheet);
                 SourceColID sColID = new SourceColID(ws);
                 m.kaxlApp.ErrorTracker.ProgramStage = "Reading " + Convert.ToString((SN)sheet);
-
-                for (int r = 2; r < k.Row.End; r++)
+                
+                for (int r = 1; r < k.Row.End; r++)
                 {
                     m.kaxlApp.ErrorTracker.Row = r;
+                    string poNumber, key;
+                    double lineNumber;
 
                     try
                     {
-                        string poNumber = (string)k[r, sColID.PurchaseOrder];
-                        double lineNumber = Convert.ToDouble(k[r, sColID.LineNumber]);
-                        string key = poNumber + Convert.ToString(Math.Round(lineNumber,0));
+                        poNumber = (string)k[r, sColID.PurchaseOrder];
+                        lineNumber = Convert.ToDouble(k[r, sColID.LineNumber]);
+                        key = poNumber + Convert.ToString(Math.Round(lineNumber,0));
 
                         AllDates dates = new AllDates()
                         {
@@ -134,12 +136,11 @@ namespace EXPREP_V2
 
                         Status status = new Status((string)k[r, sColID.LineStatus], m, poNumber, Convert.ToString(lineNumber), (string)k[r, sColID.ApprovalStatus]);
 
-                        //if (m.PODictionaryInExpRep.ContainsKey(key))
                         if(m.PODictionaryInExpRep.IsDuplicate(key))
                         {
-                            CheckAndUpdateReceivedAndRevisedDate(m, r, dates, key, status.CleanStatus);
+                            CheckAndUpdateReceivedAndRevisedDate(m, (m.PODictionaryInExpRep[key].ExpRepXLLineNum), dates, key, status.CleanStatus);
                         }
-                        else
+                        else if (status.CleanStatus != "Canceled" || status.CleanStatus != "Draft")
                         {
                             Item itemX = m.ItemDict[Convert.ToString(k[r, sColID.ItemNumber])];
                             string procurementCategory = (string)k[r, sColID.ProcurementCategory];

@@ -13,9 +13,8 @@ namespace EXPREP_V2
     {
         public Status() { }
 
-        enum CleanStatusE { Open,Closed,Draft,Canceled,Received } // Received will be set to closed after update of rec dates                
-        enum AllStatusE { Invoiced,Received,OpenOrder,Canceled }
-
+        public enum CleanStatusE { Open,Closed,Draft,Canceled,Received } // Received will be set to closed after update of rec dates                
+        
         // for the AllPOs list
         public Status(string poNum, string po, string line)
         {
@@ -34,9 +33,9 @@ namespace EXPREP_V2
         public string PO { get; set; } // status of the PO from All PO report - NOW ON THE OPEN LINES REPORT
         public string Line { get; set; } // status of the PO Line from Open Lines Report
         public string ExpRepStatus { get; set; } // status of the line - if it is already in the Exp Report
-        public string CleanStatus { get; set; } // final scrubbed status
+        public CleanStatusE CleanStatus { get; set; } // final scrubbed status
            
-        private string FormatStatus(string s, Master m, string poNum, string lineNumber, string approvalStatus)
+        private CleanStatusE FormatStatus(string s, Master m, string poNum, string lineNumber, string approvalStatus)
         {
             string statusInExpRep, statusInAllPORep;
             try
@@ -53,7 +52,8 @@ namespace EXPREP_V2
             string statusFromOpenLinesRep = s;
 
             if (approvalStatus == "Draft" || approvalStatus == "In review")
-                return Convert.ToString((CleanStatusE)(int)CleanStatusE.Draft);
+                //return Convert.ToString((CleanStatusE)(int)CleanStatusE.Draft);
+                return CleanStatusE.Draft;
             else if (statusFromOpenLinesRep == "Open order")
                 return Convert.ToString((CleanStatusE)(int)CleanStatusE.Open);
             else if (statusFromOpenLinesRep == "Received")
