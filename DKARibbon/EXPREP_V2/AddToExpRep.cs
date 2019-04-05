@@ -40,7 +40,7 @@ namespace EXPREP_V2
 
                 ScrubbedPOLine po = M.POLinesList[i];
 
-                if(po.Status.CleanStatus != "Canceled")
+                if(po.Status.CleanStatus != Status.CleanStatusE.Canceled)
                 {
                     // POSource Class
                     ws.Cells[nextRow, dCol.AttentionInfo].Value2 = po.Source.OriginalAttentionInfo;
@@ -67,8 +67,8 @@ namespace EXPREP_V2
                     ws.Cells[nextRow, dCol.Quantity].Value2 = po.Quantity;
                     ws.Cells[nextRow, dCol.Direct].Value2 = Convert.ToString(po.Direct);
 
-                    string status = (po.Status.CleanStatus == "Received") ? "Closed" : po.Status.CleanStatus;
-                    ws.Cells[nextRow, dCol.Status].Value2 = status;
+                    Status.CleanStatusE status = (po.Status.CleanStatus == Status.CleanStatusE.Received) ? Status.CleanStatusE.Closed : po.Status.CleanStatus;
+                    ws.Cells[nextRow, dCol.Status].Value2 = Convert.ToString(status);
 
                     ws.Cells[nextRow, dCol.WH].Value2 = po.WH;
                     ws.Cells[nextRow, dCol.Receiver].Value2 = po.Receiver;

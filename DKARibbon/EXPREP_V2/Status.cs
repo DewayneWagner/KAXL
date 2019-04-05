@@ -52,18 +52,17 @@ namespace EXPREP_V2
             string statusFromOpenLinesRep = s;
 
             if (approvalStatus == "Draft" || approvalStatus == "In review")
-                //return Convert.ToString((CleanStatusE)(int)CleanStatusE.Draft);
                 return CleanStatusE.Draft;
             else if (statusFromOpenLinesRep == "Open order")
-                return Convert.ToString((CleanStatusE)(int)CleanStatusE.Open);
+                return CleanStatusE.Open;
             else if (statusFromOpenLinesRep == "Received")
-                return Convert.ToString((CleanStatusE)(int)CleanStatusE.Received);
+                return CleanStatusE.Received;
             else if (statusFromOpenLinesRep == "Cancelled")
-                return Convert.ToString((CleanStatusE)(int)CleanStatusE.Canceled);
+                return CleanStatusE.Canceled;
             else if (statusFromOpenLinesRep == "Invoiced" || approvalStatus == "Finalized")
-                return Convert.ToString((CleanStatusE)(int)CleanStatusE.Closed);
+                return CleanStatusE.Closed;
             else
-                return Convert.ToString((CleanStatusE)(int)CleanStatusE.Open);
+                return CleanStatusE.Open;
         }
     }
 }

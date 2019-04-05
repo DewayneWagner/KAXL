@@ -140,7 +140,7 @@ namespace EXPREP_V2
                         {
                             CheckAndUpdateReceivedAndRevisedDate(m, (m.PODictionaryInExpRep[key].ExpRepXLLineNum), dates, key, status.CleanStatus);
                         }
-                        else if (status.CleanStatus != "Canceled" || status.CleanStatus != "Draft")
+                        else if (status.CleanStatus != Status.CleanStatusE.Canceled && status.CleanStatus != Status.CleanStatusE.Draft)
                         {
                             Item itemX = m.ItemDict[Convert.ToString(k[r, sColID.ItemNumber])];
                             string procurementCategory = (string)k[r, sColID.ProcurementCategory];
@@ -198,7 +198,7 @@ namespace EXPREP_V2
         }
         private int Last() => _scrubbedPOLine.Count - 1;
         
-        private void CheckAndUpdateReceivedAndRevisedDate(Master m, int row, AllDates dates, string key, string status)
+        private void CheckAndUpdateReceivedAndRevisedDate(Master m, int row, AllDates dates, string key, Status.CleanStatusE status)
         {
             PODictionaryInExpRep po = m.PODictionaryInExpRep[key];
 
@@ -206,7 +206,7 @@ namespace EXPREP_V2
             {
                 m.Dates.AddDateToExpRepUpdateList(row, dates.RevisedScheduledDeliveryDate);
             }
-            if (!po.IsReceivedDatePresent && status == "Received")
+            if (!po.IsReceivedDatePresent && status == Status.CleanStatusE.Received)
             {
                 m.Dates.AddDateToExpRepUpdateList(row, DateTime.MinValue, true);
             }
