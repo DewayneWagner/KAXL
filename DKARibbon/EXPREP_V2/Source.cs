@@ -9,7 +9,7 @@ namespace EXPREP_V2
     public class Source
     {
         public enum SourceType { Unknown, ProdOrder, PReq, Project, AFE, MinMax, HM, ICO }
-        private enum SourceTypePrefixes {Null, PRO, PRQ, PJN, AFE, MIN, ICO,Total }
+        private enum SourceTypePrefixes {Null, PRO, PRQ, PJN, AFE, MIN, ICO, Total }
         private enum DataSplitSection { Source,Requester,Creator,Scrap }
 
         public Source() { }
@@ -17,7 +17,6 @@ namespace EXPREP_V2
         private List<Source> _multiLineSourceList;
 
         private string[] _datasplit;
-        //private List<string> _datasplit;
         private string[] _requesterDataSplit;
 
         public Source(string attentionInfo)
@@ -145,14 +144,19 @@ namespace EXPREP_V2
         {
             int q = 3;
             char[] c = _datasplit[(int)DataSplitSection.Source].ToCharArray();
-            string testString;
+            string testString = null;
 
             for (int i = 0; i < (c.Length - q); i++)
             {
-                testString = (c[i] + c[i + 1] + c[i + 2]).ToString();
-                for (int j = 0; j < (int)SourceTypePrefixes.Total; j++)
+                testString = null;
+                for (int k = i; k < q + i; k++)
                 {
-                    if(testString == Convert.ToString((SourceTypePrefixes)j))
+                    testString += c[k].ToString();
+                }
+
+                for (int j = 0; j < (int)SourceTypePrefixes.Total; j++)
+                {                    
+                    if (testString == Convert.ToString((SourceTypePrefixes)j))
                     {
                         return (SourceType)j;
                     }

@@ -23,7 +23,10 @@ namespace EXPREP_V2
         }
 
         public int RowToUpdate { get; set; }
-        public DateTime Received { get; set; }
+
+        public DateTime Received => DateTime.Today.DayOfWeek != DayOfWeek.Monday ?
+            DateTime.Today.AddDays(-1) : DateTime.Today.AddDays(-3);
+
         public DateTime RevisedScheduledDeliveryDate { get; set; }
         public DateTime POCreated { get; set; }
         public DateTime OriginalScheduledDelivery { get; set; }
@@ -50,7 +53,6 @@ namespace EXPREP_V2
                 _datesToUpdate.Add(new AllDates
                 {
                     RowToUpdate = row,
-                    Received = ActualReceivedDate(),
                 });
                 QReceivedDatesToUpdate++;
             }
@@ -64,9 +66,6 @@ namespace EXPREP_V2
                 QRevisedScheduledDeliveryDatesToUpdate++;
             }            
         }
-
-        private DateTime ActualReceivedDate() => DateTime.Today.DayOfWeek != DayOfWeek.Monday ?
-            DateTime.Today.AddDays(-1) : DateTime.Today.AddDays(-3);
 
         public int QDatesToUpdate() => _datesToUpdate.Count;
 

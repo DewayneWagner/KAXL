@@ -51,9 +51,9 @@ namespace EXPREP_V2
                     ws.Cells[nextRow, dCol.Expeditor].Value2 = po.Source.CreatedBy;
 
                     // Cash Class
-                    ws.Cells[nextRow, dCol.CAD].Value2 = po.Cash.CAD;
+                    //ws.Cells[nextRow, dCol.CAD].Value2 = po.Cash.CAD;
                     ws.Cells[nextRow, dCol.Curr].Value2 = po.Cash.Currency;
-                    ws.Cells[nextRow, dCol.UnitPriceCAD].Value2 = po.Cash.UnitPriceCAD;
+                    //ws.Cells[nextRow, dCol.UnitPriceCAD].Value2 = po.Cash.UnitPriceCAD;
                     ws.Cells[nextRow, dCol.UnitPriceUSD].Value2 = po.Cash.UnitPriceUSD;
                     ws.Cells[nextRow, dCol.NetAmount].Value2 = po.Cash.NetAmount;
                     ws.Cells[nextRow, dCol.USD].Value2 = po.Cash.USD;
@@ -93,6 +93,9 @@ namespace EXPREP_V2
                     // Vendor Class
                     ws.Cells[nextRow, dCol.VendorAccount].Value2 = po.Vendor.Code;
                     ws.Cells[nextRow, dCol.VendorName].Value2 = po.Vendor.Name;
+
+                    // Category Class
+                    ws.Cells[nextRow, dCol.Category].Value2 = po.Category.CleanCategory;
 
                     nextRow++;
                     M.updateMetrics.QTotalUpdatedLines++;

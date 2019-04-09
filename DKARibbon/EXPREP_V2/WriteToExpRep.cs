@@ -46,7 +46,7 @@ namespace EXPREP_V2
 
                 i++;
                 _scrubbedPOLinesObjArray[i, m.ExpRepColumn.AttentionInfo] = po.Source.OriginalAttentionInfo;
-                _scrubbedPOLinesObjArray[i, m.ExpRepColumn.CAD] = po.Cash.CAD;
+                //_scrubbedPOLinesObjArray[i, m.ExpRepColumn.CAD] = po.Cash.CAD;
                 _scrubbedPOLinesObjArray[i, m.ExpRepColumn.Category] = po.Category.CleanCategory;
                 _scrubbedPOLinesObjArray[i, m.ExpRepColumn.Createdby] = po.Source.CreatedBy;
                 _scrubbedPOLinesObjArray[i, m.ExpRepColumn.Curr] = po.Cash.Currency;
@@ -73,7 +73,7 @@ namespace EXPREP_V2
                 _scrubbedPOLinesObjArray[i, m.ExpRepColumn.Requester] = po.Source.Requester;
                 _scrubbedPOLinesObjArray[i, m.ExpRepColumn.RevisedSchedDelDate] = po.Dates.RevisedScheduledDeliveryDate;
                 _scrubbedPOLinesObjArray[i, m.ExpRepColumn.Status] = po.Status.CleanStatus;
-                _scrubbedPOLinesObjArray[i, m.ExpRepColumn.UnitPriceCAD] = po.Cash.UnitPriceCAD;
+                //_scrubbedPOLinesObjArray[i, m.ExpRepColumn.UnitPriceCAD] = po.Cash.UnitPriceCAD;
                 _scrubbedPOLinesObjArray[i, m.ExpRepColumn.UnitPriceUSD] = po.Cash.UnitPriceUSD;
                 _scrubbedPOLinesObjArray[i, m.ExpRepColumn.USD] = po.Cash.USD;
                 _scrubbedPOLinesObjArray[i, m.ExpRepColumn.VendorAccount] = po.Vendor.Code;

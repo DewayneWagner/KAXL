@@ -272,42 +272,6 @@ namespace DKAExcelStuff
             {
                 return DateTime.MinValue;
             }
-
-            //try
-            //{
-                
-
-            //    //if (oDate == null)
-            //    //{
-            //    //    dt = DateTime.MinValue;
-            //    //}
-            //    //else if (oDate is string)
-            //    //{
-            //    //    d = (double)oDate;
-            //    //    d = Math.Round(d);
-
-            //    //    dt = DateTime.FromOADate(d);
-            //    //    //dt = Convert.ToDateTime(oDate);
-            //    //    //dt = DateTime.FromOADate(Math.Floor(dt.ToOADate()));
-            //    //}
-            //    //else if (oDate is DateTime)
-            //    //{
-            //    //    dt = dt.oDate(oDate);
-
-            //    //    d = Math.Round(Convert.ToDouble(oDate), 0);
-            //    //    dt = DateTime.FromOADate(d);
-            //    //}
-            //    //else
-            //    //{
-            //    //    dt = DateTime.MinValue;
-            //    //}
-            //    //dt.ToShortDateString();
-            //    //return dt;
-            //}
-            //catch
-            //{
-            //    return DateTime.MinValue;
-            //}
         }        
         public static DateTime ReadDateTime(int date)
         {
@@ -396,8 +360,7 @@ namespace DKAExcelStuff
             kaxlApp.KAXL_RG = new KAXLApp.KAXLRange(kaxlApp, RangeType.Selected);
             var mc = kaxlApp.KAXL_RG;            
             var ws = kaxlApp.WS;
-            //double exRate = 0.76037; //02-28-2019
-            
+
             for (int iRow = mc.Row.Start; iRow < mc.Row.End; iRow++)
             {
                 var CAD = ws.Cells[iRow, mc.Col.Start].Value2;

@@ -55,9 +55,9 @@ namespace EXPREP_V2
         public int VendorName => colIDL.GetColNum("VendorName");
 
         // Cash Class
-        public int CAD => colIDL.GetColNum("TotalCAD");
+        //public int CAD => colIDL.GetColNum("TotalCAD");
         public int USD => colIDL.GetColNum("TotalUSD");
-        public int UnitPriceCAD => colIDL.GetColNum("UnitPriceCAD");
+        //public int UnitPriceCAD => colIDL.GetColNum("UnitPriceCAD");
         public int UnitPriceUSD => colIDL.GetColNum("UnitPriceUSD");
         public int Curr => colIDL.GetColNum("Currency");
         public int NetAmount => colIDL.GetColNum("Net Amount");
