@@ -15,23 +15,12 @@ namespace EXPREP_V2
 
         public enum CleanStatusE { Open,Closed,Draft,Canceled,Received } // Received will be set to closed after update of rec dates                
         
-        // for the AllPOs list
-        public Status(string poNum, string po, string line)
-        {
-            PONum = poNum;
-            PO = po;
-            Line = line;
-        }
         // for POLine Level
         public Status(string lineStatus, Master m, string poNum, string lineNumber, string approvalStatus)
         {
             CleanStatus = FormatStatus(lineStatus, m, poNum, lineNumber, approvalStatus);
         }
 
-        //public Master Master { get; set; }
-        public string PONum { get; set; }
-        public string PO { get; set; } // status of the PO from All PO report - NOW ON THE OPEN LINES REPORT
-        public string Line { get; set; } // status of the PO Line from Open Lines Report
         public string ExpRepStatus { get; set; } // status of the line - if it is already in the Exp Report
         public CleanStatusE CleanStatus { get; set; } // final scrubbed status
            

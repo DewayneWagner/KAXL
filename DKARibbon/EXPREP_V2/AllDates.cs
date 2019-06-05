@@ -40,12 +40,6 @@ namespace EXPREP_V2
         public int QReceivedDatesToUpdate { get; set; }
         public int QRevisedScheduledDeliveryDatesToUpdate { get; set; }
 
-        public AllDates this[int i]
-        {
-            get => _datesToUpdate[i];
-            set => _datesToUpdate[i] = value;
-        }
-
         public void AddDateToExpRepUpdateList(int row, DateTime revisedSchedDeliveryDate, bool updateReceivedDate = false)
         {
             if (updateReceivedDate)
@@ -84,7 +78,7 @@ namespace EXPREP_V2
                 AllDates updateDates = _datesToUpdate[i];
                 if (updateDates.Received != null)
                     ws.Cells[updateDates.RowToUpdate, m.ExpRepColumn.RecDate].Value = updateDates.Received;
-                if (updateDates.RevisedScheduledDeliveryDate != null || updateDates.RevisedScheduledDeliveryDate != DateTime.MinValue)
+                if (updateDates.RevisedScheduledDeliveryDate != null && updateDates.RevisedScheduledDeliveryDate != DateTime.MinValue)
                     ws.Cells[updateDates.RowToUpdate, m.ExpRepColumn.RevisedSchedDelDate].Value = updateDates.RevisedScheduledDeliveryDate;
             }
         }
