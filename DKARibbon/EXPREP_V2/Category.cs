@@ -8,10 +8,7 @@ using System.Collections;
 namespace EXPREP_V2
 {
     public class Category
-    {
-        Master M;
-        public Category(Master m) => M = m;
-
+    {       
         public Category() { }
 
         public Category(string cat, Item item, Master M)
@@ -40,24 +37,18 @@ namespace EXPREP_V2
         }
 
         public string DirtyCategory { get; set; }
-        public string CleanCategory { get; set; }
-        public CategoryReferenceDictionary CRD { get; set; }
+        public string CleanCategory { get; set; }        
     }
     public class CategoryReferenceDictionary
     {
         private const int RowQ = 43;
         private const int ColQ = 2;
-
-        public CategoryReferenceDictionary() { }
-
+        
         private readonly Dictionary<string, Category> categoryReferenceDictionary;
 
-        private Master M;
-
-        public CategoryReferenceDictionary(Master m)
+        public CategoryReferenceDictionary()
         {
-            M = m;
-            Category cat = new Category(M);
+            Category cat = new Category();
 
             string[,] CatRefA = new string[RowQ, ColQ]
             {

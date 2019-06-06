@@ -11,7 +11,6 @@ namespace EXPREP_V2
         public enum SourceType { Unknown, ProdOrder, PReq, Project, AFE, MinMax, HM, ICO }
         private enum SourceTypePrefixes {Null, PRO, PRQ, PJN, AFE, MIN, ICO, Total }
         private enum DataSplitSection { Source,Requester,Creator,Scrap }
-
         public Source() { }
 
         private List<Source> _multiLineSourceList;

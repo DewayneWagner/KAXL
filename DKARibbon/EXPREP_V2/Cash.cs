@@ -9,22 +9,17 @@ namespace EXPREP_V2
 {
     public class Cash
     {
-        private Master M;
-
         public Cash() { }
-
-        public Cash(Master m) => M = m;
 
         public Cash(string cur,double netAmount, DateTime createdDate, Master m, double quantity)
         {
-            M = m;
             Currency = cur;
             int year = createdDate.Year;
             int month = createdDate.Month;
             NetAmount = netAmount;
             
-            UnitPriceCAD = (M.ExRateDict[cur, "CAD", year, month] * netAmount) / quantity; 
-            UnitPriceUSD = (M.ExRateDict[cur, "USD", year, month] * netAmount) / quantity;
+            UnitPriceCAD = (m.ExRateDict[cur, "CAD", year, month] * netAmount) / quantity; 
+            UnitPriceUSD = (m.ExRateDict[cur, "USD", year, month] * netAmount) / quantity;
 
             CAD = UnitPriceCAD * quantity;
             USD = UnitPriceUSD * quantity;

@@ -47,13 +47,6 @@ namespace EXPREP_V2
             }
         }
 
-        public ExRate() {}
-
-        public double this[string key]
-        {
-            get => _exRateDictionary[key];
-            set => _exRateDictionary[key] = value;
-        }
         public double this[string currFrom, string currTo, int year, int month]
         {
             get => _exRateDictionary[GetKey(currFrom, currTo, year, month)];

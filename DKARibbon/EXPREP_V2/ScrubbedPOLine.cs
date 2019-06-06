@@ -28,9 +28,7 @@ namespace EXPREP_V2
             get => _scrubbedPOLine.Count >= i ? _scrubbedPOLine[i] : null;
             set => _scrubbedPOLine[i] = value;
         }
-
-        public List<ScrubbedPOLine> GetList() => _scrubbedPOLine;
-
+        
         public string PONum { get; set; }
         public double LineNumber { get; set; }
         public double Quantity { get; set; }
@@ -40,17 +38,13 @@ namespace EXPREP_V2
         public Item ItemX { get; set; }
         public Source Source { get; set; }
         public AllDates Dates { get; set; }
-
         public string WH { get; set; }
-        public string GetWH(string wh) => wh.Length >= 3 && wh != null ? wh.Substring(0, 3) : null;
-            
+        public string GetWH(string wh) => wh.Length >= 3 && wh != null ? wh.Substring(0, 3) : null;            
         public Status Status { get; set; }
         public String Direct { get; set; }
         public string Entity => PONum.Substring(0, 4);
         public bool ICO { get; set; }
-        public bool IsLineInExpRep => (m.PODictionaryInExpRep.IsDuplicate(PONum, Math.Floor(LineNumber))) ? true : false;
-        public bool IsReceived { get; set; }
-
+        
         public string Receiver
         {
             get
@@ -197,8 +191,7 @@ namespace EXPREP_V2
                 ws.Cells.Delete();
             }
         }
-        private int Last() => _scrubbedPOLine.Count - 1;
-        
+                
         private void CheckAndUpdateReceivedAndRevisedDate(Master m, int row, AllDates dates, string key, Status.CleanStatusE status)
         {
             PODictionaryInExpRep po = m.PODictionaryInExpRep[key];
@@ -213,5 +206,6 @@ namespace EXPREP_V2
             }
         }
         public int ListQ => _scrubbedPOLine.Count;
+        public List<ScrubbedPOLine> GetScrubbedPOLineList() => _scrubbedPOLine;
     }
 }

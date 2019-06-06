@@ -36,14 +36,7 @@ namespace EXPREP_V2
             get => _poLineNum;
             set => _poLineNum = Math.Round((double)value, 0);
         }
-
-        private string _key;
-        public string Key
-        {
-            get => _key;
-            set => _key = PONum + Convert.ToString(POLineNum);
-        }
-
+        
         public Status Status { get; set; }
         public int ExpRepXLLineNum { get; set; }
         public DateTime MostRecentRevisedDeliveryDate { get; set; }
@@ -118,21 +111,15 @@ namespace EXPREP_V2
 
             return listOfColNumsOfRequiredFields;
         }
-
-        public bool IsDuplicate(string poNum, double lineNum) =>
-            (_poDictionaryInExpRep.ContainsKey(poNum + Convert.ToString(Math.Floor(lineNum)))) ? true : false;
-
+        
         public bool IsDuplicate(string key) => key != null && _poDictionaryInExpRep.ContainsKey(key) ? true : false;
-
-        public bool ContainsKey(string key) => _poDictionaryInExpRep.ContainsKey(key);
-
+        
         public string GetKey(string poNum, double lineNum) => poNum + Convert.ToString(Math.Floor(lineNum));
 
         public PODictionaryInExpRep this[string key]
         {
             get => key != null && _poDictionaryInExpRep.ContainsKey(key) ? _poDictionaryInExpRep[key] : null;
             set => _poDictionaryInExpRep[key] = value;
-        }
-        
+        }        
     }
 }

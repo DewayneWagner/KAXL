@@ -34,19 +34,19 @@ namespace EXPREP_V2
             ItemDict = new Item(this); // to initialize new itemdict
             ExRateDict = new ExRate(this);
             PODictionaryInExpRep = new PODictionaryInExpRep(this);            
-            CategoryReferenceDictionary = new CategoryReferenceDictionary(this);
+            CategoryReferenceDictionary = new CategoryReferenceDictionary();
                         
             // start reading lines of data from the rawData (cycles between tabs)
             POLinesList = new ScrubbedPOLine(this);
-            AddToExpRep a = new AddToExpRep(this);
+            //AddToExpRep a = new AddToExpRep(this);
+
+            WriteObjectArrayToExpRep = new WriteObjectArrayToExpRep(this);
 
             //WriteToExpRep = new WriteToExpRep(this, POLinesList.GetList());
         }
 
-        public Category Category { get; set; }
         public KAXLApp kaxlApp { get; set; }
         public ExRate ExRateDict { get; set; }
-        public SourceColID SColID { get; set; }
         public ExpRepColumn ExpRepColumn { get; set; }
         public Vendor VendorDict { get; set; }
         public Item ItemDict { get; set; }
@@ -56,8 +56,9 @@ namespace EXPREP_V2
         public AllDates Dates { get; set; }
         public StopWatch stopWatch { get; set; }
         public UpdateMetrics updateMetrics { get; set; }
-        public WriteToExpRep WriteToExpRep { get; set; }
 
+        public WriteObjectArrayToExpRep WriteObjectArrayToExpRep { get; }
+        
         public class StopWatch
         {
             public StopWatch() { }

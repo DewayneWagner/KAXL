@@ -10,25 +10,26 @@ using System.Runtime.InteropServices;
 
 namespace EXPREP_V2
 {
-    public class WriteToExpRep
+    public class WriteObjectArrayToExpRep
     {
         private object[,] _scrubbedPOLinesObjArray;
         private List<ScrubbedPOLine> _scrubbedPOList;
         Master m;
         private int rowQ, colQ;
 
-        public WriteToExpRep(Master master, List<ScrubbedPOLine> scrubbedPOList)
+        public WriteObjectArrayToExpRep(Master master)
         {
             m = master;
-            rowQ = scrubbedPOList.Count + 1;
-            colQ = m.ExpRepColumn.totalColumnsInExpRep + 1;
-            // +1 to correct for zero-based array - all 0 indexes don't exist
-
+            _scrubbedPOList = m.POLinesList.GetScrubbedPOLineList();
+            
+            rowQ = _scrubbedPOList.Count;
+            colQ = m.ExpRepColumn.totalColumnsInExpRep;
+            
             _scrubbedPOLinesObjArray = new object[rowQ, colQ];
-            _scrubbedPOList = scrubbedPOList;
 
             LoadObjArray();
             WriteArrayInExpRep();
+            UpdateAdditionalInformationOnExpRep();
         }
 
         public object this[int r, int c]
@@ -39,14 +40,13 @@ namespace EXPREP_V2
 
         private void LoadObjArray()
         {
-            for (int i = 1; i < rowQ; i++)
+            for (int i = 0; i < rowQ; i++)
             {
-                i--; // to account for 0 index in list, but not in array
+                //i--; // to account for 0 index in list, but not in array
                 ScrubbedPOLine po = _scrubbedPOList[i];
 
                 i++;
-                _scrubbedPOLinesObjArray[i, m.ExpRepColumn.AttentionInfo] = po.Source.OriginalAttentionInfo;
-                //_scrubbedPOLinesObjArray[i, m.ExpRepColumn.CAD] = po.Cash.CAD;
+                _scrubbedPOLinesObjArray[i, m.ExpRepColumn.AttentionInfo] = po.Source.OriginalAttentionInfo;                
                 _scrubbedPOLinesObjArray[i, m.ExpRepColumn.Category] = po.Category.CleanCategory;
                 _scrubbedPOLinesObjArray[i, m.ExpRepColumn.Createdby] = po.Source.CreatedBy;
                 _scrubbedPOLinesObjArray[i, m.ExpRepColumn.Curr] = po.Cash.Currency;
@@ -71,9 +71,13 @@ namespace EXPREP_V2
                 _scrubbedPOLinesObjArray[i, m.ExpRepColumn.RecDate] = po.Dates.Received;
                 _scrubbedPOLinesObjArray[i, m.ExpRepColumn.Receiver] = po.Receiver;
                 _scrubbedPOLinesObjArray[i, m.ExpRepColumn.Requester] = po.Source.Requester;
-                _scrubbedPOLinesObjArray[i, m.ExpRepColumn.RevisedSchedDelDate] = po.Dates.RevisedScheduledDeliveryDate;
-                _scrubbedPOLinesObjArray[i, m.ExpRepColumn.Status] = po.Status.CleanStatus;
-                //_scrubbedPOLinesObjArray[i, m.ExpRepColumn.UnitPriceCAD] = po.Cash.UnitPriceCAD;
+
+                if(po.Dates.RevisedScheduledDeliveryDate == DateTime.MinValue)
+                {
+                    _scrubbedPOLinesObjArray[i, m.ExpRepColumn.RevisedSchedDelDate] = po.Dates.RevisedScheduledDeliveryDate;
+                }
+
+                _scrubbedPOLinesObjArray[i, m.ExpRepColumn.Status] = po.Status.CleanStatus;                
                 _scrubbedPOLinesObjArray[i, m.ExpRepColumn.UnitPriceUSD] = po.Cash.UnitPriceUSD;
                 _scrubbedPOLinesObjArray[i, m.ExpRepColumn.USD] = po.Cash.USD;
                 _scrubbedPOLinesObjArray[i, m.ExpRepColumn.VendorAccount] = po.Vendor.Code;
@@ -84,21 +88,65 @@ namespace EXPREP_V2
         }
         public void WriteArrayInExpRep()
         {
-            //m.kaxlApp.WS = m.kaxlApp.WB.Sheets[(int)Master.SheetNamesE.ExpRep];
-            //WS ws = m.kaxlApp.WS;
-
             WS ws = m.kaxlApp.WB.Sheets[(int)Master.SheetNamesE.ExpRep];
-            RG rg = ws.Range[ws.Cells[KAXL.FindFirstRowAfterHeader(ws), 1], ws.Cells[KAXL.LastRow(ws, 1) + 1, colQ]];
-            //rg.set_Value(Microsoft.Office.Interop.Excel.XlRangeValueDataType.xlRangeValueDefault, _scrubbedPOLinesObjArray);
+            
+            int firstRowToWriteArrayAfterData = KAXL.LastRow(ws, 1) + 1;
+            int lastRowToWriteArray = firstRowToWriteArrayAfterData + _scrubbedPOLinesObjArray.GetLength(0);
+            int totalColumns = _scrubbedPOLinesObjArray.GetLength(1);
 
-            //Microsoft.Office.Tools.Excel.NamedRange nr = ws.Range[ws.Cells[KAXL.FindFirstRowAfterHeader(ws), 1], ws.Cells[KAXL.LastRow(ws, 1) + 1, colQ]];
-            //nr.set_Value(Microsoft.Office.Interop.Excel.XlRangeValueDataType.xlRangeValueDefault, _scrubbedPOLinesObjArray);
+            RG rg = ws.Range[ws.Cells[firstRowToWriteArrayAfterData, 1], ws.Cells[lastRowToWriteArray, totalColumns + 1]];
 
             rg.Value = _scrubbedPOLinesObjArray;
+        }
+        public void UpdateAdditionalInformationOnExpRep()
+        {
+            if (m.Dates.IsDatesToUpdateInExpediteReport)
+            {
+                m.kaxlApp.ErrorTracker.ProgramStage = "Updating Dates in Expedite Report";
 
-            //Microsoft.Office.Tools.Excel.NamedRange nr = ws.Range[ws.Cells[KAXL.FindFirstRowAfterHeader(ws), 1], ws.Cells[KAXL.LastRow(ws, 1) + 1, colQ]];            
+                m.updateMetrics.QUpdatedReceivedDates = m.Dates.QReceivedDatesToUpdate;
+                m.updateMetrics.QUpdatedRevisedDeliveryDates = m.Dates.QRevisedScheduledDeliveryDatesToUpdate;
+                m.Dates.UpdateDatesOnExpediteReport();
+            }
 
-            //Marshal.ReleaseComObject(nr);
+            WS expRep = m.kaxlApp.WB.Sheets[(int)Master.SheetNamesE.MasterData];
+
+            //Update vendor list with vendor numbers that aren't in dictionary
+            if (m.VendorDict.IsVendorNumbersThatArentInDict())
+            {
+                m.kaxlApp.ErrorTracker.ProgramStage = "Updating vendor names in vendor list";
+
+                int col = (int)Master.MasterDataColumnsE.VendorAccount;
+                int NR = KAXL.LastRow(expRep, col) + 1;
+
+                List<string> vendorNamesNotInDictionary = m.VendorDict.VendorNumbersThatArentInDictL();
+
+                foreach (string VendorNumber in vendorNamesNotInDictionary)
+                {
+                    expRep.Cells[NR, col].Value2 = VendorNumber;
+                    NR++;
+                }
+            }
+            // Update Item List with item numbers not in dictionary
+            if (m.ItemDict.IsItemsThatArentInDict())
+            {
+                m.kaxlApp.ErrorTracker.ProgramStage = "Updating Item's that aren't in dictionary";
+
+                int col = (int)Master.MasterDataColumnsE.ItemNum;
+                int NR = KAXL.LastRow(expRep, col) + 1;
+
+                List<string> itemNumbersNotInDictionary = m.ItemDict.GetItemNumbersThatArentInDictList();
+
+                foreach (string item in itemNumbersNotInDictionary)
+                {
+                    if (item != null)
+                    {
+                        expRep.Cells[NR, col].Value2 = item;
+                        NR++;
+                    }
+                }
+            }
+            m.stopWatch.EndTime = DateTime.Now;
         }
     }
 }

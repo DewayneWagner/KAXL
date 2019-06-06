@@ -70,7 +70,6 @@ namespace EXPREP_V2
         public int OriginalSchedDelDate => colIDL.GetColNum("OriginalScheduledDeliveryDate");
         public int RevisedSchedDelDate => colIDL.GetColNum("Current Delivery Date");
         public int POCreatedDate => colIDL.GetColNum("POCreatedDate");
-        public int OnTime => colIDL.GetColNum("OnTime");
         public int DateAdded => colIDL.GetColNum("DateAdded");
 
         // No Class

@@ -81,22 +81,7 @@ namespace EXPREP_V2
 
             return new Item(num, desc, cat);
         }
-        public List<string> GetItemNumbersThatArentInDictList() => _itemNumbersThatArentInDictL;
-
-        public Item GetItem(string key)
-        {
-            if (_itemDictionary.ContainsKey(key))
-            {
-                return _itemDictionary[key];
-            }
-            else
-            {
-                _itemNumbersThatArentInDictL.Add(key);
-                return null;
-            }
-        }
-
+        public List<string> GetItemNumbersThatArentInDictList() => _itemNumbersThatArentInDictL;        
         public bool IsItemsThatArentInDict() => _itemNumbersThatArentInDictL.Count > 0 ? true : false;
-        public bool IsItemInDictionary(string item) => _itemDictionary.ContainsKey(item);
     }
 }

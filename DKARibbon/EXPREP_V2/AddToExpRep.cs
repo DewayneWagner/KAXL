@@ -17,7 +17,13 @@ namespace EXPREP_V2
 {
     public class AddToExpRep
     {
-        public AddToExpRep(Master M)
+        Master m;
+
+        public AddToExpRep(Master master)
+        {
+            m = master;
+        }
+        public AddToExpRep(Master M, bool placeholder)
         {
             //Worksheet ws = M.kaxlApp.WB.Sheets[Convert.ToString((Master.SheetNamesE)((int)Master.SheetNamesE.ExpRep))];
             WS ws = M.kaxlApp.WB.Sheets[(int)Master.SheetNamesE.ExpRep];
@@ -29,10 +35,10 @@ namespace EXPREP_V2
 
             var dCol = M.ExpRepColumn;
             //ExpRepColumn dCol = new ExpRepColumn(ws);
-            int nextRow = KAXL.LastRow(ws,1) + 1;
+            int nextRow = KAXL.LastRow(ws, 1) + 1;
 
             M.kaxlApp.ErrorTracker.ProgramStage = "Writing to Expedite Report";
-            
+
             // load list with column headings
             for (int i = 1; i < length; i++)
             {
@@ -40,7 +46,7 @@ namespace EXPREP_V2
 
                 ScrubbedPOLine po = M.POLinesList[i];
 
-                if(po.Status.CleanStatus != Status.CleanStatusE.Canceled)
+                if (po.Status.CleanStatus != Status.CleanStatusE.Canceled)
                 {
                     // POSource Class
                     ws.Cells[nextRow, dCol.AttentionInfo].Value2 = po.Source.OriginalAttentionInfo;
@@ -84,12 +90,12 @@ namespace EXPREP_V2
                     ws.Cells[nextRow, dCol.Quarter].Value2 = po.Dates.Quarter;
                     ws.Cells[nextRow, dCol.Year].Value2 = po.Dates.Year;
                     ws.Cells[nextRow, dCol.DateAdded].Value = DateTime.Today;
-                    
-                    if(po.Dates.RevisedScheduledDeliveryDate != DateTime.MinValue)
+
+                    if (po.Dates.RevisedScheduledDeliveryDate != DateTime.MinValue)
                     {
                         ws.Cells[nextRow, dCol.RevisedSchedDelDate].Value = po.Dates.RevisedScheduledDeliveryDate;
                     }
-                    
+
                     // Vendor Class
                     ws.Cells[nextRow, dCol.VendorAccount].Value2 = po.Vendor.Code;
                     ws.Cells[nextRow, dCol.VendorName].Value2 = po.Vendor.Name;
@@ -101,54 +107,7 @@ namespace EXPREP_V2
                     M.updateMetrics.QTotalUpdatedLines++;
                 }
             }
-
-            if (M.Dates.IsDatesToUpdateInExpediteReport)
-            {
-                M.kaxlApp.ErrorTracker.ProgramStage = "Updating Dates in Expedite Report";
-
-                M.updateMetrics.QUpdatedReceivedDates = M.Dates.QReceivedDatesToUpdate;
-                M.updateMetrics.QUpdatedRevisedDeliveryDates = M.Dates.QRevisedScheduledDeliveryDatesToUpdate;
-                M.Dates.UpdateDatesOnExpediteReport();
-            }
-
-            WS expRep = M.kaxlApp.WB.Sheets[(int)Master.SheetNamesE.MasterData];
-
-            //Update vendor list with vendor numbers that aren't in dictionary
-            if (M.VendorDict.IsVendorNumbersThatArentInDict())
-            {
-                M.kaxlApp.ErrorTracker.ProgramStage = "Updating vendor names in vendor list";
-
-                int col = (int)Master.MasterDataColumnsE.VendorAccount;
-                int NR = KAXL.LastRow(expRep, col) + 1;
-
-                List<string> vendorNamesNotInDictionary = M.VendorDict.VendorNumbersThatArentInDictL();
-
-                foreach (string VendorNumber in vendorNamesNotInDictionary)
-                {
-                    expRep.Cells[NR, col].Value2 = VendorNumber;
-                    NR++;
-                }
-            }
-            // Update Item List with item numbers not in dictionary
-            if (M.ItemDict.IsItemsThatArentInDict())
-            {
-                M.kaxlApp.ErrorTracker.ProgramStage = "Updating Item's that aren't in dictionary";
-
-                int col = (int)Master.MasterDataColumnsE.ItemNum;
-                int NR = KAXL.LastRow(expRep, col) + 1;
-
-                List<string> itemNumbersNotInDictionary = M.ItemDict.GetItemNumbersThatArentInDictList();
-
-                foreach (string item in itemNumbersNotInDictionary)
-                {
-                    if(item != null)
-                    {
-                        expRep.Cells[NR, col].Value2 = item;
-                        NR++;
-                    }                    
-                }
-            }
-            M.stopWatch.EndTime = DateTime.Now;
-        }        
+        }
+        
     }
 }

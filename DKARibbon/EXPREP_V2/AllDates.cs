@@ -23,20 +23,14 @@ namespace EXPREP_V2
         }
 
         public int RowToUpdate { get; set; }
-
-        public DateTime Received => DateTime.Today.DayOfWeek != DayOfWeek.Monday ?
-            DateTime.Today.AddDays(-1) : DateTime.Today.AddDays(-3);
-
+        public DateTime Received => DateTime.Today.DayOfWeek != DayOfWeek.Monday ? DateTime.Today.AddDays(-1) : DateTime.Today.AddDays(-3);
         public DateTime RevisedScheduledDeliveryDate { get; set; }
         public DateTime POCreated { get; set; }
         public DateTime OriginalScheduledDelivery { get; set; }
-
         public bool IsDatesToUpdateInExpediteReport => _datesToUpdate.Count > 0 ? true : false;
-
         public int Year => POCreated.Year;
         public int Month => POCreated.Month;
         public string Quarter => KAXL.Quarter(POCreated);
-
         public int QReceivedDatesToUpdate { get; set; }
         public int QRevisedScheduledDeliveryDatesToUpdate { get; set; }
 
