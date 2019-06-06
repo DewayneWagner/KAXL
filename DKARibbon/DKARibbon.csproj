@@ -186,7 +186,6 @@
       <DependentUpon>frmCurrencyConvert.cs</DependentUpon>
     </Compile>
     <Compile Include="KAXL.cs" />
-    <Compile Include="EXPREP_V2\AddToExpRep.cs" />
     <Compile Include="MasterAnalytics\AttentionInfo.cs" />
     <Compile Include="MasterAnalytics\ItemUpdate.cs" />
     <Compile Include="MasterAnalytics\MasterAnalytics.cs" />
