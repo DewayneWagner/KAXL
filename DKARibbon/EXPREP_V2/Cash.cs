@@ -18,21 +18,16 @@ namespace EXPREP_V2
             int month = createdDate.Month;
             NetAmount = netAmount;
             
-            UnitPriceCAD = (m.ExRateDict[cur, "CAD", year, month] * netAmount) / quantity; 
             UnitPriceUSD = (m.ExRateDict[cur, "USD", year, month] * netAmount) / quantity;
 
-            CAD = UnitPriceCAD * quantity;
             USD = UnitPriceUSD * quantity;
         }
 
-        public double CAD { get; set; }
         public double USD { get; set; }
-        public double UnitPriceCAD { get; set; }
         public double UnitPriceUSD { get; set; }
-
         public string Currency { get; set; }
         public double NetAmount { get; set; }
-        public static Cash ZeroedOutCash() => new Cash() { NetAmount = 0, CAD = 0, USD = 0, UnitPriceCAD = 0, UnitPriceUSD = 0 };
+        public static Cash ZeroedOutCash() => new Cash() { NetAmount = 0, USD = 0, UnitPriceUSD = 0 };
 
     }    
 }

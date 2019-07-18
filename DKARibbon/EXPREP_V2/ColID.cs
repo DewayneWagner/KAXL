@@ -36,6 +36,7 @@ namespace EXPREP_V2
         private ColIDL colIDL;
 
         public ExpRepColumn(Worksheet ws) => colIDL = new ColIDL(ws);
+        public ExpRepColumn(List<string> _listOfColumnHeadings) => colIDL = new ColIDL(_listOfColumnHeadings);
 
         //POSource Class
         public int Requester => colIDL.GetColNum("Requester");

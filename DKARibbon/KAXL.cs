@@ -170,21 +170,6 @@ namespace DKAExcelStuff
             // with the below line of code in, in debug mode it errors out...but in live application it works - but seems to stop the code?
             //rg.Worksheet.ListObjects[TableName].TableStyle = "Blue, Table Style Medium 2";
         }
-        public static string Quarter(int month, int year)
-        {
-            int q = 0;
-
-            if (month <= 3)
-                q = 1;
-            else if (month <= 6)
-                q = 2;
-            else if (month <= 9)
-                q = 3;
-            else
-                q = 4;
-
-            return (year + "-Q" + q);
-        }
         public static string Quarter(DateTime date)
         {
             int q = 0;
@@ -245,16 +230,6 @@ namespace DKAExcelStuff
                 }
             }
         }
-        public static int YearFromString(string date)
-        {
-            DateTime d = ReadDateTime(date);
-            return d.Year;
-        }
-        public static int MonthFromString(string date)
-        {
-            DateTime d = ReadDateTime(date);
-            return d.Month;
-        }
         public static DateTime ReadDateTime(object oDate)
         {
             DateTime dt;
@@ -273,19 +248,6 @@ namespace DKAExcelStuff
                 return DateTime.MinValue;
             }
         }        
-        public static DateTime ReadDateTime(int date)
-        {
-            DateTime dt;
-            try
-            {
-                dt = date == 0 ? DateTime.MinValue : Convert.ToDateTime(date);
-            }
-            catch
-            {
-                dt = DateTime.MinValue;
-            }
-            return dt;
-        }
         public static void IfError(KAXLApp kaxlApp)
         {
             kaxlApp.KAXL_RG = new KAXLApp.KAXLRange(kaxlApp, RangeType.Selected);
@@ -338,21 +300,29 @@ namespace DKAExcelStuff
             kaxlApp.KAXL_RG = new KAXLApp.KAXLRange(kaxlApp, RangeType.Selected);
             var mc = kaxlApp.KAXL_RG;
             int LastRow = KAXL.LastRow(kaxlApp.WS, 1);
-            var ws = kaxlApp.WS;            
+            var ws = kaxlApp.WS;
+            int C = 0;
 
-            for (int col = mc.Col.Start; col <= mc.Col.End; col++)
+            try
             {
-                string extractedFormula = ws.Cells[1, col].Value2;
+                for (int col = mc.Col.Start; col <= mc.Col.End; col++)
+                {
+                    C = col;
+                    string extractedFormula = ws.Cells[1, col].Value2;
 
-                var startCell = ws.Cells[mc.Row.Start, col];
-                var endCell = ws.Cells[LastRow, col];
+                    var startCell = ws.Cells[mc.Row.Start, col];
+                    var endCell = ws.Cells[LastRow, col];
 
-                RG rg = ws.Range[startCell, endCell];
-                rg.Formula = extractedFormula;
-                var val = rg.Value2;
-                rg.Value2 = val;
+                    RG rg = ws.Range[startCell, endCell];
+                    rg.Formula = extractedFormula;
+                    var val = rg.Value2;
+                    rg.Value2 = val;
+                }
             }
-
+            catch
+            {
+                MessageBox.Show("F'ed up.....formula is f'ed up for column " + ws.Cells[2, C].Value2 + ".  Fix it Jackass");
+            }
             c = Cursors.Default;
         }
         public static void CADtoUSDConverter(KAXLApp kaxlApp, double exRate)
@@ -406,20 +376,20 @@ namespace DKAExcelStuff
     public class ColIDL
     {
         private List<string> columnHeadingsL;
-        
+
         public ColIDL() { }
 
         public ColIDL(WS ws)
         {
             columnHeadingsL = new List<string>() { null };
-            int LC = KAXL.LastCol(ws,1);
+            int LC = KAXL.LastCol(ws, 1);
             int tableStartRow = 0;
             bool isStartRow = false;
 
             do
             {
                 tableStartRow++;
-                isStartRow = ws.Cells[tableStartRow, 1].Value2 == null ? false : true;                
+                isStartRow = ws.Cells[tableStartRow, 1].Value2 == null ? false : true;
             } while (!isStartRow);
 
             for (int i = 1; i <= LC; i++)
@@ -427,6 +397,7 @@ namespace DKAExcelStuff
                 columnHeadingsL.Add(ws.Cells[tableStartRow, i].Value2);
             }
         }
+        public ColIDL(List<string> _listOfColumnHeadings) => columnHeadingsL = _listOfColumnHeadings; 
         public int GetColNum(string heading)
         {
             int colNum = columnHeadingsL.IndexOf(heading);
@@ -461,6 +432,19 @@ namespace DKAExcelStuff
             WS = WB.ActiveSheet;
             RG = Globals.ThisAddIn.Application.Selection;
             KAXL_RG = new KAXLRange();
+            ErrorTracker = new KAXLErrorTracker();
+        }
+
+        public KAXLApp(string pathToFileToOpen, int sheetNumberToOpen = 1)
+        {
+            XL = new Microsoft.Office.Interop.Excel.Application();
+
+            WB = XL.Workbooks.Open(pathToFileToOpen);
+            //WB = XL.ActiveWorkbook;
+            //WB = XL.ThisWorkbook;
+            //WB = Globals.ThisAddIn.Application.ActiveWorkbook;
+            WS = WB.Sheets[sheetNumberToOpen];
+            KAXL_RG = new KAXLRange(this, RangeType.WorkSheet);
             ErrorTracker = new KAXLErrorTracker();
         }
 
@@ -588,8 +572,7 @@ namespace DKAExcelStuff
                     Col.End = Col.Start + Col.Q;
                         
                     RG = kaxlApp.RG;
-                }   
-                
+                }
                 _valueArray = (object[,])RG.get_Value(XlRangeValueDataType.xlRangeValueDefault);
             }
 

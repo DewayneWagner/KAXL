@@ -61,7 +61,17 @@ namespace EXPREP_V2
                 _scrubbedPOLinesObjArrayOneIndexedColumns[i, m.ExpRepColumn.POSourceType] = Convert.ToString((Source.SourceType)po.Source.Type);
                 _scrubbedPOLinesObjArrayOneIndexedColumns[i, m.ExpRepColumn.Quantity] = po.Quantity;
                 _scrubbedPOLinesObjArrayOneIndexedColumns[i, m.ExpRepColumn.Quarter] = po.Dates.Quarter;
-                _scrubbedPOLinesObjArrayOneIndexedColumns[i, m.ExpRepColumn.RecDate] = po.Dates.Received;
+
+                if(po.Status.CleanStatus == Status.CleanStatusE.Received)
+                {
+                    _scrubbedPOLinesObjArrayOneIndexedColumns[i, m.ExpRepColumn.RecDate] = po.Dates.Received;
+                    _scrubbedPOLinesObjArrayOneIndexedColumns[i, m.ExpRepColumn.Status] = Convert.ToString(Status.CleanStatusE.Closed);
+                }
+                else
+                {
+                    _scrubbedPOLinesObjArrayOneIndexedColumns[i, m.ExpRepColumn.Status] = Convert.ToString((Status.CleanStatusE)po.Status.CleanStatus);
+                }
+
                 _scrubbedPOLinesObjArrayOneIndexedColumns[i, m.ExpRepColumn.Receiver] = po.Receiver;
                 _scrubbedPOLinesObjArrayOneIndexedColumns[i, m.ExpRepColumn.Requester] = po.Source.Requester;
 
@@ -69,8 +79,7 @@ namespace EXPREP_V2
                 {
                     _scrubbedPOLinesObjArrayOneIndexedColumns[i, m.ExpRepColumn.RevisedSchedDelDate] = po.Dates.RevisedScheduledDeliveryDate;
                 }
-
-                _scrubbedPOLinesObjArrayOneIndexedColumns[i, m.ExpRepColumn.Status] = po.Status.CleanStatus;                
+                
                 _scrubbedPOLinesObjArrayOneIndexedColumns[i, m.ExpRepColumn.UnitPriceUSD] = po.Cash.UnitPriceUSD;
                 _scrubbedPOLinesObjArrayOneIndexedColumns[i, m.ExpRepColumn.USD] = po.Cash.USD;
                 _scrubbedPOLinesObjArrayOneIndexedColumns[i, m.ExpRepColumn.VendorAccount] = po.Vendor.Code;
@@ -100,28 +109,7 @@ namespace EXPREP_V2
 
             rg.Value = _scrubbedPOLinesObjZeroIndexedArrayZeroIndexedColumns;
 
-            WriteFirstColumn(numberOfRows, firstRowToWriteArrayAfterData, ws);
-
             m.updateMetrics.QTotalUpdatedLines = numberOfRows;
-        }
-        private void WriteFirstColumn(int numberOfRows, int firstRowToWriteArrayAfterData, WS ws)
-        {
-            // doesn't write column #0 for some reason - not sure why.  Need to write this column on it's own.
-            //object[,] _columnZero = new object[numberOfRows,2];
-
-            //for (int r = 0; r < numberOfRows; r++)
-            //{
-            //    _columnZero[r,1] = _scrubbedPOLinesObjZeroIndexedArrayZeroIndexedColumns[r, 0];
-            //}
-
-            //RG rg2 = ws.Range[ws.Cells[firstRowToWriteArrayAfterData, 1], ws.Cells[(firstRowToWriteArrayAfterData + numberOfRows) - 1, 1]];
-            //rg2.Value2 = _columnZero;
-            int counter = 0;
-            for (int r = firstRowToWriteArrayAfterData; r < (firstRowToWriteArrayAfterData+numberOfRows)-1; r++)
-            {
-                ws.Cells[r,1].Value = Convert.ToString(_scrubbedPOLinesObjZeroIndexedArrayZeroIndexedColumns[counter, 0]);
-                counter++;
-            }
         }
         public void UpdateAdditionalInformationOnExpRep()
         {
