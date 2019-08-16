@@ -11,27 +11,85 @@ namespace DKARibbon.BOM_Scrubber
 {
     public class BOMScrubber
     {
-        private enum LineType { ItemHeader, BOMHeader, Data, Noise }
+        public static int maxBOMLevels = 10;
         private enum Index { ItemNum, ItemName, BOMNum, BOMName, QTYPerSeries, QTYItemPerBom, Total }
 
         private KAXLApp kaxlApp;
         public KAXLRange k;
-        private List<CleanBOMData> _cleanData;
-
+        private Dictionary<string, BOM> _individualBOMDictionary; // list of all BOMs
+        private Stack<BOM> _allBOMsWithHierarchyStack; // 
+        private List<string> _allBOMNumbers;
         public BOMScrubber(KAXLApp ka)
         {
             kaxlApp = ka;
-            _cleanData = new List<CleanBOMData>();
-
+            _individualBOMDictionary = new Dictionary<string, BOM>();
+            _allBOMsWithHierarchyStack = new Stack<BOM>();
 
             LoadRawData();
-            ProcessRawData();
+            ColID = new BOMColID(LoadColumnHeadingList());
+            _allBOMNumbers = LoadListOfAllBOMs();
+
+            BuildListOfBOMs();
+
 
             ExpRepData = new ExpRepData();
         }
 
+        private BOMColID ColID { get; set; }
+
+        private void BuildListOfBOMSWithHierarchy()
+        {
+            int i = 0;
+
+            foreach (KeyValuePair<string,BOM> b in _individualBOMDictionary)
+            {
+                
+            }
+        }
+
+        private void BuildListOfBOMs()
+        {
+            string key = null;
+            for (int i = 1; i <= k.Row.End; i++)
+            {
+                key = Convert.ToString(k[i, ]);
+                _individualBOMDictionary.Add(key,new BOM()
+                {
+                    IsTopLevel = DetermineIfIsTopLevel(i),
+                    Number = Convert.ToString(k[i, ColID.BOMNumber]),
+                    //Name = Convert.ToString(k[i, Col.BOMName]),
+                    QTYInParent = Convert.ToInt32(k[i, ColID.QuantityOfItemInParent]),
+                    QSubs = GetQSubs(i)
+                });
+            }
+        }
+
+        private bool DetermineIfIsTopLevel(int bomRow)
+        {
+            var bom = k[bomRow, ColID.BOMNumber];
+            for (int i = 1; i <= k.Row.End; i++)
+            {
+                if (k[i, ColID.ItemNumber] == bom)
+                    return false;
+            }
+            return true;
+        }
+        //private int GetQSubs(int bomRow)
+        //{
+        //    var bom = k[bomRow, ColID.BOMNumber];
+        //    bool isAssembly;
+        //    int q = 0;
+        //    for (int i = 1; i <= k.Row.End; i++)
+        //    {
+        //        isAssembly = Convert.ToBoolean(k[i, Col.IsAssembly]);
+
+        //        if (k[i, ColID.BOMNumber] == bom && isAssembly)
+        //            q++;
+        //    }
+        //    return q;
+        //}
+
         public ExpRepData ExpRepData { get; set; }
-        private ListOfBOMArrays BOM_Arr { get; set; }
 
         private void LoadRawData()
         {
@@ -39,131 +97,44 @@ namespace DKARibbon.BOM_Scrubber
             int LC = 18;
 
             kaxlApp.RG = kaxlApp.WS.Range[kaxlApp.WS.Cells[1, 1], kaxlApp.WS.Cells[LR, LC]];
-            kaxlApp.RG.UnMerge();
             k = new KAXLApp.KAXLRange(kaxlApp, RangeType.CodedRangeSetKAXLAppRG);
         }
 
-        private void ProcessRawData()
+        private List<string> LoadColumnHeadingList()
         {
-            string masterBomNum = null, masterBOMName = null, bomNum = null, bomName = null;
-            int qtyBOM = 0, currentRow = 1, qty = 0;
-            bool isFirstItemHeader = true;
+            List<string> _headings = new List<string>();
 
-            CleanBOMData currentCleanBOMDataLine = new CleanBOMData();
-
-            LineType lt;
-            for (int r = 1; r < k.Row.End; r++)
+            for (int i = 1; i <= k.Col.Q; i++)
             {
-                // row 1 will always be highest level BOM
-
-                lt = GetRowType(Convert.ToString(k[r,SourceCol.NumberItemAndBOM]));
-
-                switch (lt)
-                {
-                    case LineType.BOMHeader:
-                        ProcessBOMHeaderLine(r);
-                        break;
-                    case LineType.ItemHeader:
-                        currentRow = ProcessItemHeaderLine(r);
-                        r = currentRow - 1; // ProcessItemHeaderLine processes several lines - so counter needs to be reset.  -1 to account for autoincrement in for loop
-                        break;
-                    default:
-                        break;
-                }
+                _headings.Add(Convert.ToString(k[1, i]));
             }
-            int ProcessItemHeaderLine(int row) // return row to process for next  iteration to reset loop counter
-            {
-                row++;  // because header isn't relevant - only data immediately below the header
-                if (isFirstItemHeader)
-                {
-                    masterBomNum = Convert.ToString(k[row,SourceCol.NumberItemAndBOM]);
-                    masterBOMName = Convert.ToString(k[row, SourceCol.NameItemAndBOM]);
-                    isFirstItemHeader = false;
-                }
-                else
-                {
-                    do
-                    {
-                        _cleanData.Add(new CleanBOMData()
-                        {
-                            BOMName = bomName,
-                            BOMNum = bomNum,
-                            ItemName = Convert.ToString(k[row, SourceCol.NameItemAndBOM]),
-                            ItemNum = Convert.ToString(k[row, SourceCol.NumberItemAndBOM]),
-                            QtyItemInBOM = (Int32.TryParse(Convert.ToString(k[row, SourceCol.QTY_ItemInBOM]), out qty)) ? qty : 0,
-                            UOM = Convert.ToString(k[row, SourceCol.UOM]),
-                            QTY_BOM = qtyBOM,
-                            MasterBOMNumber = masterBomNum,
-                            MasterBOMName = masterBOMName
-                        });
 
-                        if(row == k.Row.End) { break; }
-                        else { row++; }
-
-                        lt = GetRowType(Convert.ToString(k[row, SourceCol.NumberItemAndBOM]));
-                    } while (lt == LineType.Data);
-                }
-                
-                return row;
-            }
-            void ProcessBOMHeaderLine(int row) 
-            {
-                row++;
-
-                bomNum = Convert.ToString(k[row, SourceCol.NumberItemAndBOM]);
-                bomName = Convert.ToString(k[row, SourceCol.NameItemAndBOM]);
-                
-                int num;
-                bool success = Int32.TryParse(Convert.ToString(k[row, SourceCol.QTY_BOM]), out num);
-                qtyBOM = success ? num : 1;
-            }
+            return _headings;
         }
 
-        private LineType GetRowType(string firstValue)
+        private List<string> LoadListOfAllBOMs()
         {
-            switch (firstValue)
+            List<string> _allBOMs = new List<string>();
+
+            for (int i = 1; i <= k.Row.Q; i++)
             {
-                case "Item number":
-                    return LineType.ItemHeader;
-                case "BOM":
-                    return LineType.BOMHeader;
-                case "Lines":
-                case "Pure Technologies Ltd.":
-                case null:
-                    return LineType.Noise;
-                default:
-                    return LineType.Data;
+                _allBOMs.Add(TrimEndOffBOM(Convert.ToString(k[i, ColID.BOMNumber])));
             }
-        }
-        private class SourceCol
-        {
-            public static int NumberItemAndBOM = 1;
-            public static int NameItemAndBOM = 2;
-            public static int QTY_BOM = 3;
-            public static int QTY_ItemInBOM = 11;
-            public static int QTY_PerSeries = 13;
-            public static int UOM = 15;
+            return _allBOMs;
         }
         
-        private class BOM
+        private bool DetermineIfItemIsBOM(string bomNumber) => _allBOMNumbers.Contains(bomNumber) ? true : false;
+        private class TopLevelBOM : BOM
         {
-            public BOM() { }
-            public string Number { get; set; }
-            public string Name { get; set; }
-            public int QTYInParent { get; set; }
-            public int Level { get; set; }
-            public bool IsTopLevel { get; set; }
-            public bool HasSubLevels { get; set; }
-            public List<SUBBOM> ListOfSubBOMs { get; set; }
-        }
-        private class SUBBOM : BOM { }
-        private class ListOfBOMArrays
-        {
-            int maxBOMLevels = 6;
-            BOM[] _bomA;
-            public ListOfBOMArrays()
+            private List<BOM> _BOMHierarchy;
+            public TopLevelBOM()
             {
-                _bomA = new BOM[maxBOMLevels];
+                _BOMHierarchy = new List<BOM>(maxBOMLevels);
+            }
+            public BOM this[int level]
+            {
+                get => _BOMHierarchy[level];
+                set => _BOMHierarchy[level] = value;
             }
         }
     }

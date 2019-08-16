@@ -9,14 +9,16 @@ namespace DKARibbon.BOM_Scrubber
 {
     public class BOMColID
     {
-        private ColIDL colID;
+        private ColIDL ColID;
 
-        public BOMColID(KAXLApp k)
+        public BOMColID(List<string> _headings)
         {
-            colID = new ColIDL(k.WS);
+            ColID = new ColIDL(_headings);
         }
-        public int ItemNum => colID.GetColNum("Item number");
-        public int ItemName => colID.GetColNum("Product name");
-
+        public int ItemNumber => ColID.GetColNum("Item number");
+        public int BOMNumber => ColID.GetColNum("BOM");
+        public int QuantityOfItemInParent => ColID.GetColNum("Quantity");
+        public int UOM => ColID.GetColNum("Unit");
+        public int ItemDescription => ColID.GetColNum("Product name");
     }
 }

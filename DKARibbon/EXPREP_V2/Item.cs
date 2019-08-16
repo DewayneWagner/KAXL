@@ -32,6 +32,7 @@ namespace EXPREP_V2
         public string Num { get; set; }
         public string Desc { get; set; }
         public string Cat { get; set; }
+        public int QItemsInBOM { get; set; }
 
         private void LoadItemDictionary()
         {

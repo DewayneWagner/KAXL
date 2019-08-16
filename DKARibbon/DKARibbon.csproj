@@ -158,9 +158,11 @@
     can be found.
   -->
   <ItemGroup>
+    <Compile Include="BOM_Scrubber\BOM.cs" />
     <Compile Include="BOM_Scrubber\BOMColID.cs" />
+    <Compile Include="BOM_Scrubber\BOMDictionary.cs" />
+    <Compile Include="BOM_Scrubber\BOMNumber.cs" />
     <Compile Include="BOM_Scrubber\BOMScrubber.cs" />
-    <Compile Include="BOM_Scrubber\CleanBOMData.cs" />
     <Compile Include="BOM_Scrubber\ExpRepData.cs" />
     <Compile Include="CreateDataTable.cs" />
     <Compile Include="DKARibbon.cs" />
