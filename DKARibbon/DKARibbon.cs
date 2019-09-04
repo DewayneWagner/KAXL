@@ -11,6 +11,7 @@ using DKAExcelStuff;
 using EXPREP_V2;
 using System.Windows.Forms;
 using XL = Microsoft.Office.Interop.Excel;
+using DKARibbon.SQLite_DataBase;
 
 // TODO:  Follow these steps to enable the Ribbon (XML) item:
 
@@ -100,6 +101,10 @@ namespace DKARibbon
             //KAXLApp kaxlApp = new KAXLApp();
             //System.Windows.Forms.Application.EnableVisualStyles();
             //System.Windows.Forms.Application.Run(new frmEXPREP_V2_WINDOW(kaxlApp));
+        }
+        public void UpdateDataBase(Office.IRibbonControl control)
+        {
+            new DBUpdate();
         }
 
         #region IRibbonExtensibility Members

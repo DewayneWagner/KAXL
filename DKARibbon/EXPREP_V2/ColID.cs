@@ -12,7 +12,8 @@ namespace EXPREP_V2
     {
         private ColIDL colIDL;
         // Classifies the column numbers for the "Open PO Lines" report that data is being read from
-        public SourceColID(Worksheet ws) => colIDL = new ColIDL(ws);           
+        public SourceColID(Worksheet ws) => colIDL = new ColIDL(ws);
+        public SourceColID(List<string> headingsList) => colIDL = new ColIDL(headingsList);
 
         public int VendorAccount => colIDL.GetColNum("Vendor account");
         public int PurchaseOrder => colIDL.GetColNum("Purchase order");
@@ -46,6 +47,7 @@ namespace EXPREP_V2
         public int AttentionInfo => colIDL.GetColNum("AttentionInformation");
         public int Expeditor => colIDL.GetColNum("Expeditor");
         public int Direct => colIDL.GetColNum("Direct");
+        public int IsRush => colIDL.GetColNum("IsRush");
 
         // Item Class        
         public int ItemNumber => colIDL.GetColNum("ItemNumber");
@@ -83,7 +85,7 @@ namespace EXPREP_V2
         public int Quantity => colIDL.GetColNum("Quantity");        
         public int Status => colIDL.GetColNum("Status");
         public int Receiver => colIDL.GetColNum("Receiver");
-
+        
         // Category Class
         public int Category => colIDL.GetColNum("Clean Category");
 

@@ -17,7 +17,7 @@ using System.Net;
 using System.Text.RegularExpressions;
 using System.Globalization;
 using System.Net.Http;
-using DKARibbon.BOM_Scrubber;
+
 
 namespace DKAExcelStuff
 {
@@ -26,7 +26,7 @@ namespace DKAExcelStuff
         public static void TestM(KAXLApp kaxlApp)
         {
             //BOMColID b = new BOMColID(new KAXLApp());
-            new BOMScrubber(new KAXLApp());
+            //new BOMScrubber(new KAXLApp());
 
             //int rowQ = kaxlApp.WorkSheetRange.Row.Q;
             //int startRow = kaxlApp.WorkSheetRange.Row.Start;

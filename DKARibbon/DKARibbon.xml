@@ -3,7 +3,7 @@
   <ribbon>
     <tabs>
       <tab idMso="TabAddIns">
-        <group id="Content" label="War Room">
+        <!--<group id="Content" label="War Room">
           <button id="WarRoom" label="War Room Format"
                screentip="War Room Format" onAction="OnWarRoomButton"
                supertip="Formats AX Report into DataTable."/>
@@ -11,7 +11,7 @@
                screentip="War Room Present Data" onAction="OnWarRoomPresentButton"
                supertip="Presentation and Action Capture Format"/>          
         
-        </group>
+        </group>-->
         <group id ="MasterAnalytics" label="Formula">
           <button id="FirstRowFormula" label="Calculate First Row Formulas"
                   screentip="Carry down formulas from top row to entire column, and paste-as-values after calculation"
@@ -24,6 +24,12 @@
           <button id="TestButton" label="Test"
                   onAction="TestButton"/>
         </group>
+
+        <group id="DataBase" label="DataBase">
+          <button id="DBUpdate" label="Update DB" onAction="UpdateDataBase"/>
+          
+        </group>
+               
         <group id="Tools" label="Tools">
           <button id="btnIfError" label ="IfError"
                   onAction ="btnIfError"/>

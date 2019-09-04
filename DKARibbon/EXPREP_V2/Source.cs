@@ -20,6 +20,8 @@ namespace EXPREP_V2
 
         public Source(string attentionInfo)
         {
+            
+
             if(attentionInfo == null)
             {
                 OriginalAttentionInfo = null;
@@ -31,6 +33,18 @@ namespace EXPREP_V2
             }
             else
             {
+                if (CheckIfIsRush(attentionInfo))
+                {
+                    IsRush = true;
+
+                    char[] ca = attentionInfo.ToCharArray();
+                    attentionInfo = null;
+
+                    for (int i = 5; i < ca.Length; i++)
+                    {
+                        attentionInfo += ca[i];
+                    }
+                }
                 OriginalAttentionInfo = attentionInfo;
                 _datasplit = attentionInfo.Split('/');
 
@@ -96,6 +110,7 @@ namespace EXPREP_V2
         }
 
         public bool IsMultiLinePO { get; set; }
+        public bool IsRush { get; set; }
         public string OriginalAttentionInfo { get; }
         public SourceType Type { get; set; }
         public string Code { get; set; }
@@ -173,6 +188,11 @@ namespace EXPREP_V2
                     return true;
             }
             return false;
+        }
+        private bool CheckIfIsRush(string attentionInfo)
+        {
+            string[] _checkForRush = attentionInfo.Split('/');
+            return (_checkForRush[0].ToUpper() == "RUSH") ? true : false;
         }
     }
 }

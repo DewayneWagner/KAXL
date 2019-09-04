@@ -61,6 +61,7 @@ namespace EXPREP_V2
                 _scrubbedPOLinesObjArrayOneIndexedColumns[i, m.ExpRepColumn.POSourceType] = Convert.ToString((Source.SourceType)po.Source.Type);
                 _scrubbedPOLinesObjArrayOneIndexedColumns[i, m.ExpRepColumn.Quantity] = po.Quantity;
                 _scrubbedPOLinesObjArrayOneIndexedColumns[i, m.ExpRepColumn.Quarter] = po.Dates.Quarter;
+                _scrubbedPOLinesObjArrayOneIndexedColumns[i, m.ExpRepColumn.IsRush] = po.Source.IsRush;
 
                 if(po.Status.CleanStatus == Status.CleanStatusE.Received)
                 {
