@@ -19,7 +19,7 @@ namespace DKARibbon.SQLite_DataBase
             if (!_isCreated)
             {
                 _isCreated = true;
-                Database.EnsureDeleted();
+                //Database.EnsureDeleted();
                 Database.EnsureCreated();
             }
         }
@@ -29,6 +29,11 @@ namespace DKARibbon.SQLite_DataBase
         {
             string dbPath = Path.Combine(_sqLiteDBPath, _fileName);
             optionsBuilder.UseSqlite($"Filename={dbPath}");
+
+
+
+            //@"Data Source=c:\foo_db\bar_db.db"
+            //optionsBuilder.UseSqlite(@"Data Source=R:\Supply Chain\ProcurementDB\Procurement_DB.sqlite");
         }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

@@ -21,6 +21,7 @@ namespace EXPREP_V2
             m = master;
             _scrubbedPOLine = new List<ScrubbedPOLine>();
             LoadScrubbedPOLineList();
+            
         }
 
         public ScrubbedPOLine this[int i]
@@ -188,6 +189,7 @@ namespace EXPREP_V2
                         m.kaxlApp.ErrorTracker.AddNewError(Convert.ToString((SN)sheet) + ", Row" + Convert.ToString(r));
                     }                    
                 }
+
                 ws.Cells.Delete();
             }
         }

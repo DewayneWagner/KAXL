@@ -13,6 +13,7 @@ namespace DKARibbon.SQLite_DataBase
 {
     class POLineDB
     {
+        POLineDB() { }
         public POLineDB(string po, double num) { Key = po + Convert.ToString(num); }
         public string Key { get; set; }
         public string PONumber { get; set; }

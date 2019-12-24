@@ -307,6 +307,7 @@
     <Compile Include="SQLite_DataBase\DBContext.cs" />
     <Compile Include="SQLite_DataBase\DBUpdate.cs" />
     <Compile Include="SQLite_DataBase\POLineDB.cs" />
+    <Compile Include="SQLite_DataBase\POLineList.cs" />
     <Compile Include="WriteData.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>

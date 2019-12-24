@@ -41,6 +41,7 @@ namespace EXPREP_V2
         public int ExpRepXLLineNum { get; set; }
         public DateTime MostRecentRevisedDeliveryDate { get; set; }
         public bool IsReceivedDatePresent { get; set; }
+        public Item Item { get; set; }
 
         // array of array method
         private void LoadDictionary()
