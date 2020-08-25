@@ -74,6 +74,7 @@ namespace EXPREP_V2
             public int QTotalUpdatedLines { get; set; }
             public int QUpdatedReceivedDates { get; set; }
             public int QUpdatedRevisedDeliveryDates { get; set; }
+            public int QItemDescriptionsUpdated { get; set; }
         }        
     }    
 }

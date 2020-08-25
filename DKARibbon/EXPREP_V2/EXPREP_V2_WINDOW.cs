@@ -28,23 +28,33 @@ namespace EXPREP_V2
 
         private void btnUpdateExpRep_Click(object sender, EventArgs e)
         {
-            
-            try
-            {
-                txtDone.Text = "Working...";
+            txtDone.Text = "Working...";
 
-                M = new Master(k, this);
+            M = new Master(k, this);
 
-                txtDone.Text = "DONE!!!";
-                txtQDeliveryDatesUpdated.Text = Convert.ToString(M.updateMetrics.QUpdatedRevisedDeliveryDates);
-                txtQLinesUpdated.Text = Convert.ToString(M.updateMetrics.QTotalUpdatedLines);
-                txtQReceivedDatesUpdated.Text = Convert.ToString(M.updateMetrics.QUpdatedReceivedDates);
-                txtTimeElapsed.Text = Convert.ToString(M.stopWatch.ElapsedTime);
-            }
-            catch
-            {
-                txtDone.Text = "F'd Up..." + "\n" + k.ErrorTracker.ProgramStage + "\n" + "Row: " + Convert.ToString(k.ErrorTracker.Row);
-            }
+            txtDone.Text = "DONE!!!";
+            txtQDeliveryDatesUpdated.Text = Convert.ToString(M.updateMetrics.QUpdatedRevisedDeliveryDates);
+            txtQLinesUpdated.Text = Convert.ToString(M.updateMetrics.QTotalUpdatedLines);
+            txtQReceivedDatesUpdated.Text = Convert.ToString(M.updateMetrics.QUpdatedReceivedDates);
+            txtTimeElapsed.Text = Convert.ToString(M.stopWatch.ElapsedTime);
+            txt_ItemDescriptionsUpdated.Text = Convert.ToString(M.updateMetrics.QItemDescriptionsUpdated);
+            //try
+            //{
+            //    txtDone.Text = "Working...";
+
+            //    M = new Master(k, this);
+
+            //    txtDone.Text = "DONE!!!";
+            //    txtQDeliveryDatesUpdated.Text = Convert.ToString(M.updateMetrics.QUpdatedRevisedDeliveryDates);
+            //    txtQLinesUpdated.Text = Convert.ToString(M.updateMetrics.QTotalUpdatedLines);
+            //    txtQReceivedDatesUpdated.Text = Convert.ToString(M.updateMetrics.QUpdatedReceivedDates);
+            //    txtTimeElapsed.Text = Convert.ToString(M.stopWatch.ElapsedTime);
+            //    txt_ItemDescriptionsUpdated.Text = Convert.ToString(M.updateMetrics.QItemDescriptionsUpdated);
+            //}
+            //catch
+            //{
+            //    txtDone.Text = "F'd Up..." + "\n" + k.ErrorTracker.ProgramStage + "\n" + "Row: " + Convert.ToString(k.ErrorTracker.Row);
+            //}
         }
 
         public void KillProgramLeaveWindowOpen(string message)

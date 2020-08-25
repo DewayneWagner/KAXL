@@ -12,7 +12,7 @@ namespace EXPREP_V2
 {
     public class PODictionaryInExpRep
     {        
-        private enum RequiredFields { PoNumberCol, LineNumberCol, RecDateCol, RevDateCol, StatusCol, Total}
+        private enum RequiredFields { PoNumberCol, LineNumberCol, RecDateCol, RevDateCol, StatusCol, ItemNum, ItemDesc, Total}
 
         public PODictionaryInExpRep() { }
 
@@ -41,7 +41,8 @@ namespace EXPREP_V2
         public int ExpRepXLLineNum { get; set; }
         public DateTime MostRecentRevisedDeliveryDate { get; set; }
         public bool IsReceivedDatePresent { get; set; }
-        public Item Item { get; set; }
+        public string ItemNum { get; set; }
+        public string ItemDesc { get; set; }
 
         // array of array method
         private void LoadDictionary()
@@ -74,7 +75,7 @@ namespace EXPREP_V2
                 }
             }
 
-            string poNum, key;
+            string poNum, key, itemNum, itemDesc;
             double lineNum;
 
             for (int r = 0; r < qRows; r++)
@@ -82,7 +83,8 @@ namespace EXPREP_V2
                 poNum = Convert.ToString(_objectArray[r, (int)RequiredFields.PoNumberCol]);
                 lineNum = Convert.ToDouble(_objectArray[r, (int)RequiredFields.LineNumberCol]);
                 key = GetKey(poNum, lineNum);
-
+                //CheckIfItemDescNeedsToBeUpdated(r);
+                
                 PODictionaryInExpRep po = new PODictionaryInExpRep()
                 {
                     PONum = poNum,
@@ -90,12 +92,55 @@ namespace EXPREP_V2
                 };
                 if (!IsDuplicate(key))
                 {
-                    po.ExpRepXLLineNum = (r + firstRow);                    
+                    itemNum = Convert.ToString(_objectArray[r, (int)RequiredFields.ItemNum]);
+                    po.ItemNum = itemNum.Length < 7 ? null : itemNum;
+
+                    if (po.ItemNum != null)
+                    {
+                        itemDesc = Convert.ToString(_objectArray[r, (int)RequiredFields.ItemDesc]);
+                        po.ItemDesc = itemDesc.Length <= 5 ? null : itemDesc;
+                    }
+                    else { po.ItemDesc = null; }
+
+                    po.ExpRepXLLineNum = (r + firstRow);
                     po.MostRecentRevisedDeliveryDate = KAXL.ReadDateTime(_objectArray[r, (int)RequiredFields.RevDateCol]);
                     po.Status = new Status() { ExpRepStatus = Convert.ToString(_objectArray[r, (int)RequiredFields.StatusCol]) };
                     po.IsReceivedDatePresent = _objectArray[r, (int)RequiredFields.RecDateCol] != null ? true : false;
-                    _poDictionaryInExpRep[key] = po;                    
-                }                
+                    _poDictionaryInExpRep[key] = po;
+                } 
+            }
+            CheckIfItemDescNeedsToBeUpdated();
+
+            void CheckIfItemDescNeedsToBeUpdated()
+            {
+                //var updateList = _poDictionaryInExpRep
+                //    .Where(p => p.Value.ItemNum != null && p.Value.ItemNum.Length > 1)
+                //    .Where(p => p.Value.ItemDesc.Length <= 1)
+                //    .ToList();
+
+                //var updateList2 = _poDictionaryInExpRep
+                //    .Where(p => p.Value.ItemNum != null && p.Value.ItemNum != "")
+                //    .Where(p => p.Value.ItemDesc == null || p.Value.ItemDesc == "")
+                //    .ToList();
+
+                var updateList = _poDictionaryInExpRep
+                    .Where(p => p.Value.ItemNum != null)
+                    .Where(p => p.Value.ItemDesc == null)
+                    .ToList();
+
+                //var updateList3 = _poDictionaryInExpRep
+                //    .Where(p => p.Value.ItemNum != null)
+                //    .ToList();
+
+                //var updateList4 = _poDictionaryInExpRep
+                //    .Where(p => p.Value.ItemNum != null)
+                //    .Where(p => p.Value.ItemDesc == null)
+                //    .ToList();
+
+                foreach (KeyValuePair<string,PODictionaryInExpRep> po in updateList)
+                {
+                    m.ItemDict.AddItemsInExpRepMissingDescriptions(po.Value.ItemNum, po.Value.ExpRepXLLineNum);
+                }
             }
         }
 
@@ -107,7 +152,9 @@ namespace EXPREP_V2
                 m.ExpRepColumn.LineNumber,
                 m.ExpRepColumn.RecDate,
                 m.ExpRepColumn.RevisedSchedDelDate,
-                m.ExpRepColumn.Status
+                m.ExpRepColumn.Status,
+                m.ExpRepColumn.ItemNumber,
+                m.ExpRepColumn.ItemDescription
             };
 
             return listOfColNumsOfRequiredFields;
@@ -121,6 +168,6 @@ namespace EXPREP_V2
         {
             get => key != null && _poDictionaryInExpRep.ContainsKey(key) ? _poDictionaryInExpRep[key] : null;
             set => _poDictionaryInExpRep[key] = value;
-        }        
+        }                
     }
 }

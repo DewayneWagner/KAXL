@@ -25,26 +25,57 @@ namespace DKAExcelStuff
     {
         public static void TestM(KAXLApp kaxlApp)
         {
-            //BOMColID b = new BOMColID(new KAXLApp());
-            //new BOMScrubber(new KAXLApp());
+            KAXLTest k = new KAXLTest();
+            List<string> headingsList = k.GetHeadingsList(kaxlApp.WS);
 
-            //int rowQ = kaxlApp.WorkSheetRange.Row.Q;
-            //int startRow = kaxlApp.WorkSheetRange.Row.Start;
-            //int endRow = kaxlApp.WorkSheetRange.Row.End;
-
-            //int startCol = kaxlApp.WorkSheetRange.Col.Start;
-            //int endCol = kaxlApp.WorkSheetRange.Col.End;
-            //int colQ = kaxlApp.WorkSheetRange.Col.Q;
             
-            //object[,] testArray = new object[kaxlApp.WorkSheetRange.Row.Q + 1, kaxlApp.WorkSheetRange.Col.Q + 1];
-
-            //for (int r = 1; r <= kaxlApp.WorkSheetRange.Row.Q; r++)
-            //{
-            //    for (int c = 1; c <= kaxlApp.WorkSheetRange.Col.Q; c++)
-            //    {
-            //        testArray[r, c] = kaxlApp.WorkSheetRange[r, c];
-            //    }
-            //}
         }
-    }  
+        
+    }
+    public class KAXLTest
+    {
+        public List<string> GetHeadingsList(WS ws)
+        {
+            int headersRow = GetHeadingsRow();
+            int lastCol = LastCol(ws, headersRow);
+
+            RG headingsRange = ws.Range[ws.Cells[headersRow, 1], ws.Cells[headersRow, lastCol]];
+
+            object[,] _headingsArray = Get2DObjectArray(headingsRange);
+
+            return GetHeadingsList();
+
+            int GetHeadingsRow()
+            {
+                int FR = 0;
+                do { FR++; } while (ws.Cells[FR, 1].Value2 == null);
+                return FR;
+            }
+            List<string> GetHeadingsList()
+            {
+                List<string> headingsList = new List<string>();
+
+                for (int i = 1; i < _headingsArray.GetLength(1); i++)
+                {
+                    headingsList.Add(Convert.ToString(_headingsArray[1,i]));
+                }
+
+                return headingsList;
+            }
+        }
+        public object[] Get1DObjectArray(RG rg) => (object[])rg.get_Value(XlRangeValueDataType.xlRangeValueDefault);
+        public object[,] Get2DObjectArray(RG rg) => (object[,])rg.get_Value(XlRangeValueDataType.xlRangeValueDefault);
+        public int LastCol(WS ws, int headerRow)
+        {
+            bool foundEmptyCol = false;
+            int searchCol = 1;
+
+            do
+            {
+                if (ws.Cells[headerRow, searchCol].Value2 == null) { return (searchCol - 1); }
+                searchCol++;
+            } while (!foundEmptyCol);
+            return 1;
+        }
+    }
 }

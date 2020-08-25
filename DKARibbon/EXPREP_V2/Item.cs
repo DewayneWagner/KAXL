@@ -15,11 +15,13 @@ namespace EXPREP_V2
             M = m;
             _itemDictionary = new Dictionary<string, Item>();
             _itemNumbersThatArentInDictL = new List<string>();
+            _itemsThatAreMissingDescriptionAndCategoryInExpRep = new List<Item>();
             LoadItemDictionary();
         }
 
         private readonly Dictionary<string, Item> _itemDictionary;
         private List<string> _itemNumbersThatArentInDictL;
+        private List<Item> _itemsThatAreMissingDescriptionAndCategoryInExpRep;
 
         public Item() {}
         
@@ -33,6 +35,7 @@ namespace EXPREP_V2
         public string Desc { get; set; }
         public string Cat { get; set; }
         public int QItemsInBOM { get; set; }
+        public int ExpRepRow { get; set; }
 
         private void LoadItemDictionary()
         {
@@ -84,5 +87,18 @@ namespace EXPREP_V2
         }
         public List<string> GetItemNumbersThatArentInDictList() => _itemNumbersThatArentInDictL;        
         public bool IsItemsThatArentInDict() => _itemNumbersThatArentInDictL.Count > 0 ? true : false;
+        public void AddItemsInExpRepMissingDescriptions(object itemNum, int rowInExpRep)
+        {
+            string num = Convert.ToString(itemNum);
+
+            if (_itemDictionary.ContainsKey(num))
+            {
+                Item i = _itemDictionary[num];
+                i.ExpRepRow = rowInExpRep;
+                _itemsThatAreMissingDescriptionAndCategoryInExpRep.Add(i);
+            }
+        }
+        public bool IsItemsThatNeedToHaveDescriptionsUpdated() => _itemsThatAreMissingDescriptionAndCategoryInExpRep.Count > 0 ? true : false;
+        public List<Item> GetListOfItemsThatNeedToHaveItemDescriptionsUpdated() => _itemsThatAreMissingDescriptionAndCategoryInExpRep;
     }
 }

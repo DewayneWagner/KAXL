@@ -39,14 +39,16 @@
             this.txtQDeliveryDatesUpdated = new System.Windows.Forms.TextBox();
             this.txtTimeElapsed = new System.Windows.Forms.TextBox();
             this.txtDone = new System.Windows.Forms.TextBox();
+            this.txt_ItemDescriptionsUpdated = new System.Windows.Forms.TextBox();
+            this.label5 = new System.Windows.Forms.Label();
             this.SuspendLayout();
             // 
             // btnUpdateExpRep
             // 
             this.btnUpdateExpRep.Font = new System.Drawing.Font("Microsoft Sans Serif", 15.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.btnUpdateExpRep.Location = new System.Drawing.Point(52, 192);
+            this.btnUpdateExpRep.Location = new System.Drawing.Point(52, 225);
             this.btnUpdateExpRep.Name = "btnUpdateExpRep";
-            this.btnUpdateExpRep.Size = new System.Drawing.Size(301, 92);
+            this.btnUpdateExpRep.Size = new System.Drawing.Size(301, 59);
             this.btnUpdateExpRep.TabIndex = 0;
             this.btnUpdateExpRep.Text = "Update ExpRep";
             this.btnUpdateExpRep.UseVisualStyleBackColor = true;
@@ -85,9 +87,9 @@
             // btnExit
             // 
             this.btnExit.Font = new System.Drawing.Font("Microsoft Sans Serif", 15.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.btnExit.Location = new System.Drawing.Point(397, 192);
+            this.btnExit.Location = new System.Drawing.Point(397, 225);
             this.btnExit.Name = "btnExit";
-            this.btnExit.Size = new System.Drawing.Size(301, 92);
+            this.btnExit.Size = new System.Drawing.Size(301, 59);
             this.btnExit.TabIndex = 4;
             this.btnExit.Text = "Exit";
             this.btnExit.UseVisualStyleBackColor = true;
@@ -154,11 +156,33 @@
             this.txtDone.TabIndex = 10;
             this.txtDone.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
             // 
+            // txt_ItemDescriptionsUpdated
+            // 
+            this.txt_ItemDescriptionsUpdated.Font = new System.Drawing.Font("Microsoft Sans Serif", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.txt_ItemDescriptionsUpdated.Location = new System.Drawing.Point(255, 159);
+            this.txt_ItemDescriptionsUpdated.Name = "txt_ItemDescriptionsUpdated";
+            this.txt_ItemDescriptionsUpdated.ReadOnly = true;
+            this.txt_ItemDescriptionsUpdated.Size = new System.Drawing.Size(122, 29);
+            this.txt_ItemDescriptionsUpdated.TabIndex = 12;
+            this.txt_ItemDescriptionsUpdated.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+            // 
+            // label5
+            // 
+            this.label5.AutoSize = true;
+            this.label5.Font = new System.Drawing.Font("Microsoft Sans Serif", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label5.Location = new System.Drawing.Point(11, 162);
+            this.label5.Name = "label5";
+            this.label5.Size = new System.Drawing.Size(234, 24);
+            this.label5.TabIndex = 11;
+            this.label5.Text = "Item Descriptions Updated:";
+            // 
             // frmEXPREP_V2_WINDOW
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(758, 313);
+            this.Controls.Add(this.txt_ItemDescriptionsUpdated);
+            this.Controls.Add(this.label5);
             this.Controls.Add(this.txtDone);
             this.Controls.Add(this.txtTimeElapsed);
             this.Controls.Add(this.txtQDeliveryDatesUpdated);
@@ -192,5 +216,7 @@
         private System.Windows.Forms.TextBox txtQDeliveryDatesUpdated;
         private System.Windows.Forms.TextBox txtTimeElapsed;
         private System.Windows.Forms.TextBox txtDone;
+        private System.Windows.Forms.TextBox txt_ItemDescriptionsUpdated;
+        private System.Windows.Forms.Label label5;
     }
 }

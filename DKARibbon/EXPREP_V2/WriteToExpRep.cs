@@ -123,31 +123,35 @@ namespace EXPREP_V2
                 m.Dates.UpdateDatesOnExpediteReport();
             }
 
-            WS expRep = m.kaxlApp.WB.Sheets[(int)Master.SheetNamesE.MasterData];
+            WS masterDataWS = m.kaxlApp.WB.Sheets[(int)Master.SheetNamesE.MasterData];
 
-            //Update vendor list with vendor numbers that aren't in dictionary
-            if (m.VendorDict.IsVendorNumbersThatArentInDict())
+            if (m.VendorDict.IsVendorNumbersThatArentInDict()) { updateVendorList(); }
+            if (m.ItemDict.IsItemsThatArentInDict()) { updateItemList(); }
+            if (m.ItemDict.IsItemsThatNeedToHaveDescriptionsUpdated()) { updateItemDescriptions(); }
+
+            void updateVendorList()
             {
+                //Update vendor list with vendor numbers that aren't in dictionary
                 m.kaxlApp.ErrorTracker.ProgramStage = "Updating vendor names in vendor list";
 
                 int col = (int)Master.MasterDataColumnsE.VendorAccount;
-                int NR = KAXL.LastRow(expRep, col) + 1;
+                int NR = KAXL.LastRow(masterDataWS, col) + 1;
 
                 List<string> vendorNamesNotInDictionary = m.VendorDict.VendorNumbersThatArentInDictL();
 
                 foreach (string VendorNumber in vendorNamesNotInDictionary)
                 {
-                    expRep.Cells[NR, col].Value2 = VendorNumber;
+                    masterDataWS.Cells[NR, col].Value2 = VendorNumber;
                     NR++;
                 }
             }
-            // Update Item List with item numbers not in dictionary
-            if (m.ItemDict.IsItemsThatArentInDict())
+
+            void updateItemList()
             {
                 m.kaxlApp.ErrorTracker.ProgramStage = "Updating Item's that aren't in dictionary";
 
                 int col = (int)Master.MasterDataColumnsE.ItemNum;
-                int NR = KAXL.LastRow(expRep, col) + 1;
+                int NR = KAXL.LastRow(masterDataWS, col) + 1;
 
                 List<string> itemNumbersNotInDictionary = m.ItemDict.GetItemNumbersThatArentInDictList();
 
@@ -155,8 +159,27 @@ namespace EXPREP_V2
                 {
                     if (item != null)
                     {
-                        expRep.Cells[NR, col].Value2 = item;
+                        masterDataWS.Cells[NR, col].Value2 = item;
                         NR++;
+                    }
+                }
+            }
+
+            void updateItemDescriptions()
+            {
+                m.kaxlApp.ErrorTracker.ProgramStage = "Updating Item's that don't have description";
+
+                WS expRep = m.kaxlApp.WB.Sheets[(int)Master.SheetNamesE.ExpRep];
+
+                List<Item> itemsMissingDescription = m.ItemDict.GetListOfItemsThatNeedToHaveItemDescriptionsUpdated();
+                m.updateMetrics.QItemDescriptionsUpdated = itemsMissingDescription.Count;
+
+                foreach (Item item in itemsMissingDescription)
+                {
+                    if (item != null)
+                    {
+                        expRep.Cells[item.ExpRepRow, m.ExpRepColumn.ItemDescription].Value2 = item.Desc;
+                        expRep.Cells[item.ExpRepRow, m.ExpRepColumn.ItemCategory].Value2 = item.Cat;
                     }
                 }
             }

@@ -51,7 +51,8 @@ namespace EXPREP_V2
 
         // Item Class        
         public int ItemNumber => colIDL.GetColNum("ItemNumber");
-        public int ItemDescription => colIDL.GetColNum("ItemDescription"); 
+        public int ItemDescription => colIDL.GetColNum("ItemDescription");
+        public int ItemCategory => colIDL.GetColNum("Clean Category");
 
         // Vendor Class
         public int VendorAccount => colIDL.GetColNum("VendorAccount");

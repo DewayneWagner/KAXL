@@ -22,42 +22,42 @@ namespace DKAExcelStuff
 
     public class KAXL
     {   
-        public static int LastRow(Worksheet ws, int col)
-        {
-            string val = null;
-            bool done = false;
+        //public static int LastRow(Worksheet ws, int col)
+        //{
+        //    string val = null;
+        //    bool done = false;
 
-            List<int> incrementsL = new List<int>() { 10000, 1000, 100, 1 };
-            int length = incrementsL.Count;
+        //    List<int> incrementsL = new List<int>() { 10000, 1000, 100, 1 };
+        //    int length = incrementsL.Count;
 
-            int LR = incrementsL[0] + 1;
+        //    int LR = incrementsL[0] + 1;
 
-            for (int i = 0; i < length; i++)
-            {
-                do
-                {
-                    var value = ws.Cells[LR, col].Value2;
+        //    for (int i = 0; i < length; i++)
+        //    {
+        //        do
+        //        {
+        //            var value = ws.Cells[LR, col].Value2;
 
-                    if (value is double)
-                        val = Convert.ToString(value);
-                    else
-                        val = value;
+        //            if (value is double)
+        //                val = Convert.ToString(value);
+        //            else
+        //                val = value;
 
-                    if (string.IsNullOrWhiteSpace(val) && (i != (length - 1)))
-                        done = true;
-                    else if (string.IsNullOrWhiteSpace(val) && (i == (length - 1)) && DoubleCheckLR(LR, ws, col))
-                        return (LR-1);
-                    else
-                        LR += incrementsL[i];
+        //            if (string.IsNullOrWhiteSpace(val) && (i != (length - 1)))
+        //                done = true;
+        //            else if (string.IsNullOrWhiteSpace(val) && (i == (length - 1)) && DoubleCheckLR(LR, ws, col))
+        //                return (LR-1);
+        //            else
+        //                LR += incrementsL[i];
                     
-                } while (!done);
+        //        } while (!done);
 
-                done = false;
-                LR -= incrementsL[i];
-                LR += incrementsL[(i + 1)];
-            }
-            return 0;
-        }
+        //        done = false;
+        //        LR -= incrementsL[i];
+        //        LR += incrementsL[(i + 1)];
+        //    }
+        //    return 0;
+        //}
         private static bool DoubleCheckLR(int LR, Worksheet ws, int col)
         {
             string val = null;
@@ -79,23 +79,87 @@ namespace DKAExcelStuff
             }
             return true;
         }
+        public static int LastRow(WS ws, int firstCol)
+        {
+            List<int> searchIncrementsList = new List<int>() { 10000, 1000, 100, 1 };
+            bool foundEmptyRow = false;
+            int searchRow = GetFirstDataRow(ws, firstCol);
+            int numberOfRowsToSearchAfterFirstNullValue = 25;
+            int lastCol = LastCol(ws, 3);
+
+            for (int i = 0; i < searchIncrementsList.Count; i++)
+            {
+                do
+                {
+                    if (!isRowEmpty(ws.Cells[searchRow, firstCol].Value2)) { searchRow += searchIncrementsList[i]; }
+                    else if (i == (searchIncrementsList.Count - 1) && !isThereDataAfterNullValue()) 
+                        { return (searchRow - 1); }
+                    else { foundEmptyRow = true; }
+                } while (!foundEmptyRow);
+
+                if(searchRow > searchIncrementsList[i]) { searchRow -= searchIncrementsList[i]; }
+                foundEmptyRow = false;
+            }
+            return 1;
+
+            bool isRowEmpty(object nextCell) => (nextCell == null) ? true : false;
+            bool isThereDataAfterNullValue()
+            {
+                int firstSearchRow = searchRow + numberOfRowsToSearchAfterFirstNullValue;
+                for (int row = firstSearchRow; row > searchRow; row--)
+                {
+                    if (!isRowEmpty(ws.Cells[row, firstCol].Value2)) { return true; }
+                }
+                return false;
+            }
+        }
+        private static int GetFirstDataRow(WS ws, int col)
+        {
+            string value;
+            int FR = 1;
+            do
+            {
+                value = Convert.ToString(ws.Cells[FR, col].Value2);
+                if (!String.IsNullOrEmpty(value)) 
+                { 
+                    return FR + 1; // assumes first non-null value is header 
+                }
+                else
+                {
+                    FR++;
+                }
+
+            } while (true);
+            return 2;
+        }
+        private static int GetHeadingsRow(WS ws)
+        {
+            bool empty, empty2;
+            object o;
+            int FR = 1;
+            do
+            {
+                o = ws.Cells[FR, 1].Value2;
+                empty = (String.IsNullOrEmpty(Convert.ToString(o)));
+                empty2 = String.IsNullOrWhiteSpace(Convert.ToString(o));
+                FR++;
+            } while (empty);
+            return FR;
+        }
         public static int LastCol(Worksheet ws, int row)
         {
-            string val = null;
+            bool foundEmptyCol = false;
+            int searchCol = 1;
 
-            for (int LC = 50; LC >= 1; LC--)
+            if(ws.Name== "ExpediteReport") { row = 2; }
+            else { row = 1; }
+
+            do
             {
-                var value = ws.Cells[row, LC].Value2;
-
-                if (value is double)
-                    val = Convert.ToString(value);
-                else
-                    val = value;
-
-                if (val != null)
-                    return (LC);
-            }
-            return 0;
+                if (ws.Cells[row, searchCol].Value2 == null) { return (searchCol - 1); }
+                searchCol++;
+            } while (!foundEmptyCol);
+            return 1;
         }                
         public static string[,] LoadDirtyArr(Worksheet ws, int lr, int lc)
         {
@@ -440,9 +504,6 @@ namespace DKAExcelStuff
             XL = new Microsoft.Office.Interop.Excel.Application();
 
             WB = XL.Workbooks.Open(pathToFileToOpen);
-            //WB = XL.ActiveWorkbook;
-            //WB = XL.ThisWorkbook;
-            //WB = Globals.ThisAddIn.Application.ActiveWorkbook;
             WS = WB.Sheets[sheetNumberToOpen];
             KAXL_RG = new KAXLRange(this, RangeType.WorkSheet);
             ErrorTracker = new KAXLErrorTracker();
@@ -508,25 +569,11 @@ namespace DKAExcelStuff
             {                
                 if(rt == RangeType.Selected)
                 {
-                    //Row = new Row()
-                    //{
-                    //    Start = kaxlApp.RG.Row,
-                    //    Q = kaxlApp.RG.Rows.Count,
-                    //    End = Start + Q,
-                    //};
-
                     Row = new Row();
                     Row.Start = kaxlApp.RG.Row;
                     Row.Q = kaxlApp.RG.Rows.Count;
                     Row.End = Row.Start + Row.Q;
-
-                    //Col = new Col()
-                    //{
-                    //    Start = kaxlApp.RG.Column,
-                    //    Q = kaxlApp.RG.Columns.Count,
-                    //    End = Start + Q,
-                    //};
-
+                    
                     Col = new Col();
                     Col.Start = kaxlApp.RG.Column;
                     Col.Q = kaxlApp.RG.Columns.Count;
@@ -536,6 +583,10 @@ namespace DKAExcelStuff
                 }
                 else if(rt == RangeType.WorkSheet)
                 {
+                    int FR = KAXL.FindFirstRowAfterHeader(kaxlApp.WS);
+                    int LR = KAXL.LastRow(kaxlApp.WS, 1);
+                    object test = kaxlApp.WS.Cells[3, 1].Value2;
+
                     Row = new Row()
                     {
                         Start = KAXL.FindFirstRowAfterHeader(kaxlApp.WS),
